@@ -25,7 +25,7 @@ const CreateNewRequest = () => {
   return (
     <div className="container py-5">
       <h2 className="text-center mb-4 fw-bold text-primary">
-      Create New Request Categories
+      Create New Request/Upload Your Work Order
       </h2>
 
       {loading ? (
@@ -58,16 +58,14 @@ const CreateNewRequest = () => {
           {/* Right Column: Selected category details */}
           <div className="col-md-7">
             {selectedCategory ? (
-              <div className="card shadow-lg border-0">
+              <div className="card shadow-lg border-0 text-center">
                 <div className="card-body">
-                  <h5 className="card-title text-primary fw-bold mb-3">
-                    Category Details
-                  </h5>
-                  {/* <p className="fs-5 mb-2">
+                  
+                  <p className="fs-5 mb-2">
                     <strong>Category ID:</strong> {selectedCategory.cat_id}
-                  </p> */}
-                  <p className="fs-5">
-                    <strong>Description:</strong> {selectedCategory.cat_text}
+                  </p> 
+                   <p className="fs-5">
+                    {selectedCategory.cat_text}
                   </p>
                 </div>
               </div>

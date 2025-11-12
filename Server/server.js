@@ -22,6 +22,7 @@ const sha256 = require("sha256");
 //----------------------------MasterEntry route----------------------------------------------
 
 const createNewRequest=require("./Routes/createNewRequest.route.js");
+const insertClientAdvtRequest=require("./Routes/InsertClientAdvtRequest.route.js")
 
 const app = express();
 app.use(cors());
@@ -34,7 +35,8 @@ app.set("trust proxy", true);
 // app.use("api/adminuser",Adminuser);
 
 //----------------------------MasterEntry----------------------------------------------
-app.use("/api",createNewRequest);
+app.use("/api",createNewRequest),
+app.use("/api",insertClientAdvtRequest)
 
 
 

@@ -218,6 +218,10 @@ const ClientSideNavbar = ({ isCollapsed, toggleSidebar, toggleCollapse }) => {
               </NavLink>
             </div>
           </Collapse>
+
+          <NavLink to="/Forward-Request" className="nav-link text-white sidebar-dropdown">
+                {!isCollapsed && "Forward Request To Samvad "}
+              </NavLink>
           {/* Master Entry Dropdown Header End */}
         </nav>
 
