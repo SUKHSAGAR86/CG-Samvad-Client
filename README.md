@@ -1,1 +1,0 @@
-# CG-Samvad-Client
