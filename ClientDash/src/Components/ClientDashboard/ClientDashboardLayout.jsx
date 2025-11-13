@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom"
 import ClientSideNav from "./ClientSideNav"
 import ClientHeader from "./ClientHeader"
 import ClientFooter from "./ClientFooter"
+// import noiticeBoard from "./ClientNoticeBoard/ClientNoticeBoard"
 
 const ClientDashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -60,6 +61,7 @@ const ClientDashboardLayout = () => {
         {/* Page content */}
         <main className="flex-grow-1 p-3 mt-3 mt-lg-0 bg-danger-subtle">
           <Outlet />
+
         </main>
 
         {/* Footer */}
