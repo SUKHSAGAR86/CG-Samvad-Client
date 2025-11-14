@@ -1,208 +1,16 @@
-
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import "bootstrap/dist/css/bootstrap.min.css";
-
-// const NewsRatesList = () => {
-//   const [newspapers, setNewspapers] = useState([]);
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const recordsPerPage = 5;
-//   const [loading, setLoading] = useState(true);
-//   const [expanded, setExpanded] = useState({});
-
-//   useEffect(() => {
-//     fetchNewspaperRates();
-//   }, []);
-
-//   const fetchNewspaperRates = async () => {
-//     try {
-//       setLoading(true);
-//       const res = await axios.get("http://localhost:3080/api/get-news-rate");
-//       setNewspapers(res.data);
-//     } catch (error) {
-//       console.error("Error fetching newspaper rates:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const toggleExpand = (np_cd) => {
-//     setExpanded((prev) => ({
-//       ...prev,
-//       [np_cd]: !prev[np_cd],
-//     }));
-//   };
-
-//   // Pagination Logic
-//   const indexOfLastRecord = currentPage * recordsPerPage;
-//   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-//   const currentRecords = newspapers.slice(indexOfFirstRecord, indexOfLastRecord);
-//   const totalPages = Math.ceil(newspapers.length / recordsPerPage);
-
-//   return (
-//     <div className="container mt-4">
-//       <h4 className="text-center fw-bold mb-4 text-primary">
-//         📰 Active Newspapers & Rate Details
-//       </h4>
-
-//       {loading ? (
-//         <div className="text-center my-5">
-//           <div className="spinner-border text-primary" role="status">
-//             <span className="visually-hidden">Loading...</span>
-//           </div>
-//         </div>
-//       ) : (
-//         <>
-//           <div className="table-responsive">
-//             <table className="table table-bordered table-hover align-middle shadow-sm">
-//               <thead className="table-primary text-center">
-//                 <tr>
-//                   <th style={{ width: "5%" }}>Sr.No</th>
-//                   <th style={{ width: "30%" }}>Newspaper</th>
-//                   <th style={{ width: "10%" }}>Total Rates</th>
-//                   <th style={{ width: "10%" }}>Action</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {currentRecords.map((np, index) => (
-//                   <React.Fragment key={np.np_cd}>
-//                     <tr
-//                       className={`text-center ${
-//                         index % 2 === 0 ? "table-light" : "table-white"
-//                       }`}
-//                     >
-//                       <td>{np.sr_no}</td>
-//                       <td className="text-start fw-semibold">{np.NP}</td>
-//                       <td>{np.rates.length}</td>
-//                       <td>
-//                         <button
-//                           className="btn btn-sm btn-outline-primary"
-//                           onClick={() => toggleExpand(np.np_cd)}
-//                         >
-//                           {expanded[np.np_cd] ? "Hide" : "View"}
-//                         </button>
-//                       </td>
-//                     </tr>
-
-//                     {expanded[np.np_cd] && (
-//                       <tr>
-//                         <td colSpan="4" className="p-0">
-//                           <div className="p-3 bg-light border-top">
-//                             <h6 className="fw-bold text-secondary mb-2">
-//                               Rate Details
-//                             </h6>
-//                             <div className="table-responsive">
-//                               <table className="table table-sm table-bordered">
-//                                 <thead className="table-secondary text-center">
-//                                   <tr>
-//                                     <th>Rate Code</th>
-//                                     <th>Circulation</th>
-//                                     <th>CC Rate</th>
-//                                     <th>SC Rate</th>
-//                                     <th>Category</th>
-//                                     <th>From</th>
-//                                     <th>To</th>
-//                                     <th>Remark</th>
-//                                   </tr>
-//                                 </thead>
-//                                 <tbody>
-//                                   {np.rates.length > 0 ? (
-//                                     np.rates.map((r, i) => (
-//                                       <tr
-//                                         key={i}
-//                                         className={
-//                                           i % 2 === 0 ? "table-light" : ""
-//                                         }
-//                                       >
-//                                         <td>{r.rate_cd}</td>
-//                                         <td>{r.no_of_circulation}</td>
-//                                         <td>{r.cc_rate}</td>
-//                                         <td>{r.sc_rate}</td>
-//                                         <td>{r.rate_category_name}</td>
-//                                         <td>{r.from_date}</td>
-//                                         <td>{r.to_date}</td>
-//                                         <td>{r.remark}</td>
-//                                       </tr>
-//                                     ))
-//                                   ) : (
-//                                     <tr>
-//                                       <td colSpan="8" className="text-center">
-//                                         No rate records found.
-//                                       </td>
-//                                     </tr>
-//                                   )}
-//                                 </tbody>
-//                               </table>
-//                             </div>
-//                           </div>
-//                         </td>
-//                       </tr>
-//                     )}
-//                   </React.Fragment>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-
-//           {/* Pagination */}
-//           <nav>
-//             <ul className="pagination justify-content-center">
-//               <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-//                 <button
-//                   className="page-link"
-//                   onClick={() => setCurrentPage(currentPage - 1)}
-//                 >
-//                   Previous
-//                 </button>
-//               </li>
-//               {Array.from({ length: totalPages }, (_, i) => (
-//                 <li
-//                   key={i + 1}
-//                   className={`page-item ${
-//                     currentPage === i + 1 ? "active" : ""
-//                   }`}
-//                 >
-//                   <button
-//                     className="page-link"
-//                     onClick={() => setCurrentPage(i + 1)}
-//                   >
-//                     {i + 1}
-//                   </button>
-//                 </li>
-//               ))}
-//               <li
-//                 className={`page-item ${
-//                   currentPage === totalPages ? "disabled" : ""
-//                 }`}
-//               >
-//                 <button
-//                   className="page-link"
-//                   onClick={() => setCurrentPage(currentPage + 1)}
-//                 >
-//                   Next
-//                 </button>
-//               </li>
-//             </ul>
-//           </nav>
-//         </>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default NewsRatesList;
-
-
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./Styles/newsRateList.css"
 
 const NewsRatesList = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // 🔵 PAGINATION STATES
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 15;
 
   useEffect(() => {
     fetchData();
@@ -246,12 +54,49 @@ const NewsRatesList = () => {
     XLSX.writeFile(wb, "NewspaperRates.xlsx");
   };
 
+  // 🔵 PAGINATION LOGIC
+  const totalPages = Math.ceil(data.length / recordsPerPage);
+  const indexOfLast = currentPage * recordsPerPage;
+  const indexOfFirst = indexOfLast - recordsPerPage;
+  const currentData = data.slice(indexOfFirst, indexOfLast);
+
+  // Generate button numbers
+const getPageNumbers = () => {
+  let pages = [];
+
+  // Always show first page
+  pages.push(1);
+
+  if (currentPage > 3) pages.push("...");
+
+  // Middle sliding window
+  let start = Math.max(2, currentPage - 1);
+  let end = Math.min(totalPages - 1, currentPage + 1);
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  if (currentPage < totalPages - 2) pages.push("...");
+
+  // Always show last page (only if > 1)
+  if (totalPages > 1) pages.push(totalPages);
+
+  // 🔥 Remove duplicates
+  pages = [...new Set(pages)];
+
+  return pages;
+};
+
   return (
-    <div className="container-fluid mt-4" style={{ maxWidth: "1200px" }}>
+    <div className="container mt-4" >
+
+        <h3 className=" text-center fw-bold p-2 rounded mb-5" style={{backgroundColor:"#D1A980", color:"#313647"}}>  News Paper Rate List</h3>
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3 ">
+        
         <div
-          className="d-flex align-items-center text-primary"
+          className="d-flex align-items-center btn btn-outline-success"
           style={{ cursor: "pointer" }}
           onClick={exportToExcel}
         >
@@ -261,7 +106,7 @@ const NewsRatesList = () => {
             width="35"
             height="35"
           />
-          <span className="ms-2 fw-semibold">Click to export data</span>
+          <span className="  ms-2 fw-semibold">Click to export data</span>
         </div>
         <div
           className="px-3 py-1 fw-bold text-white"
@@ -283,77 +128,150 @@ const NewsRatesList = () => {
           </div>
         </div>
       ) : (
-        <div className="table-responsive shadow-sm border rounded">
-          <table
-            className="table table-bordered"
-            style={{
-              fontSize: "14px",
-              borderCollapse: "collapse",
-              backgroundColor: "#f9ffff",
-            }}
-          >
-            <thead>
-              <tr className="text-center align-middle" >
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "5%"}}>Sr No.</th>
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "25%"}}>NP Name</th>
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "5%" }}>Sno</th>
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "15%" }}>Category</th>
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "10%" }}>CC Rate ₹</th>
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "10%" }}>SC Rate ₹</th>
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "10%" }}>Circulation</th>
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "10%" }}>From Date</th>
-                <th style={{ backgroundColor:"rgb(163, 72, 90)",width: "10%" }}>To Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((np, idx) => (
-                <React.Fragment key={np.np_cd}>
-                  {np.rates.map((r, i) => (
-                    <tr
-                      key={i}
-                      style={{
-                        backgroundColor:
-                          idx % 2 === 0 ? "#e0f7fa" : "#ffffff",
-                      }}
+        <>
+          <div className="table-responsive shadow-sm border rounded">
+          
+            <table
+              className="table table-bordered table-container"
+              style={{
+                fontSize: "14px",
+                borderCollapse: "collapse",
+                backgroundColor: "#f9ffff",     
+                position: "fixed !important",
+  
+              }}
+            >
+              <thead className="table-header">
+                <tr className="text-center ">
+                  <th style={{ width: "5%" }}>Sr No.</th>
+                  <th style={{ width: "25%" }}>News Paper Name</th>
+                  <th style={{ width: "5%" }}>Sno</th>
+                  <th style={{ width: "15%" }}>Category</th>
+                  <th style={{ width: "10%" }}>CC Rate ₹</th>
+                  <th style={{ width: "10%" }}>SC Rate ₹</th>
+                  <th style={{ width: "10%" }}>Circulation</th>
+                  <th style={{ width: "10%" }}>From Date</th>
+                  <th style={{ width: "10%" }}>To Date</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {currentData.map((np, idx) => (
+                  <React.Fragment key={np.np_cd}>
+                    {np.rates.map((r, i) => {
+                      const bg = (idx + i) % 2 === 0 ? "#ffffff": "#DCDCDC";
+                      const bg1 = idx % 2 === 0 ?  "#ffffff": "#DCDCDC";
+
+                      return (
+                        <tr key={i} className="custom-row-border">
+                          {i === 0 && (
+                            <>
+                              <td
+                                rowSpan={np.rates.length}
+                                className="text-center fw-bold"
+                                style={{
+                                  verticalAlign: "middle",
+                                  backgroundColor: bg,
+                                }}
+                              >
+                                {np.sr_no}
+                              </td>
+
+                              <td
+                                rowSpan={np.rates.length}
+                                className="fw-bold text-dark text-center fs-6"
+                                style={{
+                                  verticalAlign: "middle",
+                                  backgroundColor: bg,
+                                  fontWeight:"bold"
+                                }}
+                              >
+                                {np.NP}
+                              </td>
+                            </>
+                          )}
+
+                          <td className="text-center" style={{ backgroundColor: bg1 }}>
+                            {i + 1}
+                          </td>
+
+                          <td style={{ backgroundColor: bg1 }}>
+                            {r.rate_category_name}
+                          </td>
+
+                          <td className="text-end" style={{ backgroundColor: bg1 }}>
+                            {r.cc_rate}
+                          </td>
+
+                          <td className="text-end" style={{ backgroundColor: bg1 }}>
+                            {r.sc_rate}
+                          </td>
+
+                          <td className="text-end" style={{ backgroundColor: bg1 }}>
+                            {r.no_of_circulation}
+                          </td>
+
+                          <td className="text-center" style={{ backgroundColor: bg1 }}>
+                            {r.from_date}
+                          </td>
+
+                          <td className="text-center" style={{ backgroundColor: bg1 }}>
+                            {r.to_date}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 🔵 PAGINATION */}
+          <div className="d-flex justify-content-center mt-3">
+            <nav>
+              <ul className="pagination">
+                <li className={`page-item ${currentPage === 1 && "disabled"}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage((p) => p - 1)}
+                  >
+                    Prev
+                  </button>
+                </li>
+
+                {getPageNumbers().map((num, index) =>
+                  num === "..." ? (
+                    <li key={index} className="page-item disabled">
+                      <span className="page-link">...</span>
+                    </li>
+                  ) : (
+                    <li
+                      key={index}
+                      className={`page-item ${num === currentPage ? "active" : ""}`}
                     >
-                      {i === 0 && (
-                        <>
-                          <td
-                            rowSpan={np.rates.length}
-                            className="text-center fw-bold"
-                            style={{
-                              verticalAlign: "middle",
-                              borderRight: "2px solid #00bcd4",
-                            }}
-                          >
-                            {np.sr_no}
-                          </td>
-                          <td
-                            rowSpan={np.rates.length}
-                            className="fw-semibold text-primary"
-                            style={{
-                              verticalAlign: "middle",
-                              borderRight: "2px solid #00bcd4",
-                            }}
-                          >
-                            {np.NP}
-                          </td>
-                        </>
-                      )}
-                      <td className="text-center">{i + 1}</td>
-                      <td>{r.rate_category_name}</td>
-                      <td className="text-end">{r.cc_rate}</td>
-                      <td className="text-end">{r.sc_rate}</td>
-                      <td className="text-end">{r.no_of_circulation}</td>
-                      <td className="text-center">{r.from_date}</td>
-                      <td className="text-center">{r.to_date}</td>
-                    </tr>
-                  ))}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(num)}
+                      >
+                        {num}
+                      </button>
+                    </li>
+                  )
+                )}
+
+                <li className={`page-item ${currentPage === totalPages && "disabled"}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage((p) => p + 1)}
+                  >
+                    Next
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </>
       )}
     </div>
   );
