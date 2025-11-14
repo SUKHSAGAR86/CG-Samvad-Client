@@ -218,7 +218,7 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         </NavLink>
 
         <NavLink
-          to="/Forward-Request"
+          to="/newsratelist"
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
@@ -235,7 +235,7 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         </NavLink>
 
         <NavLink
-          to="/notices"
+          to="/notice"
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
