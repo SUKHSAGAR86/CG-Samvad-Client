@@ -19,7 +19,7 @@ const ClientHeader = ({ toggleSidebar }) => {
   };
 
   return (
-    <header className="bg-dark  border-bottom sticky-top d-flex align-items-center justify-content-between p-3 px-3 shadow-sm z-3">
+    <header className=" border-bottom sticky-top d-flex align-items-center justify-content-between p-3 px-3 shadow-sm z-3">
       {/* Sidebar Toggle (Mobile) */}
       <button
         className="btn btn-outline-secondary d-lg-none"
@@ -52,7 +52,7 @@ const ClientHeader = ({ toggleSidebar }) => {
         {/* Profile Dropdown */}
         <Dropdown align="end">
           <Dropdown.Toggle
-            variant="dark"
+            variant=""
             className="d-flex align-items-center text-white gap-2 border-0 shadow-none"
           >
             <img

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import RequestForm from "./requestForm";
 
 const CreateNewRequest = () => {
   const [categories, setCategories] = useState([]);
@@ -60,10 +61,6 @@ const CreateNewRequest = () => {
             {selectedCategory ? (
               <div className="card shadow-lg border-0 text-center">
                 <div className="card-body">
-                  
-                  <p className="fs-5 mb-2">
-                    <strong>Category ID:</strong> {selectedCategory.cat_id}
-                  </p> 
                    <p className="fs-5">
                     {selectedCategory.cat_text}
                   </p>
@@ -74,11 +71,21 @@ const CreateNewRequest = () => {
                 <p>Select a category from the left to view details.</p>
               </div>
             )}
+
+{/* request form start*/}
+
+<RequestForm category={selectedCategory} />
+
+{/* request form end */}
+
+
           </div>
+
         </div>
       )}
     </div>
   );
+  
 };
 
 export default CreateNewRequest;

@@ -7,7 +7,7 @@ const ClientFooter = () => {
   const appVersion = "v1.0.0"; // Can be dynamic from package.json or env later
 
   return (
-    <footer className="bg-dark text-white shadow-sm mt-auto py-3">
+    <footer className="text-white shadow-sm mt-auto py-3">
       <div className="container-fluid">
         <div className="row align-items-center text-center text-lg-start g-3">
           

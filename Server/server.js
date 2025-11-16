@@ -18,7 +18,7 @@ const sha256 = require("sha256");
 
 // const Adminuser=require("./routes/auth.route.js");
 
-
+const authRoute = require("./Routes/auth.route.js");
 
 
 const createNewRequest=require("./Routes/createNewRequest.route.js");
@@ -37,10 +37,10 @@ app.use(bodyParser.json());
 app.set("trust proxy", true);
 
 // FIXED PATHS
-// app.use("/api/auth", authRoute);
+app.use("/api/auth", authRoute);
 // app.use("api/adminuser",Adminuser);
 
-//----------------------------MasterEntry----------------------------------------------
+
 app.use("/api",createNewRequest);
 app.use("/api",insertClientAdvtRequest);
 app.use("/api",clientNotices);

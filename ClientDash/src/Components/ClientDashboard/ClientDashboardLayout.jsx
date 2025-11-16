@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom"
 import ClientSideNav from "./ClientSideNav"
 import ClientHeader from "./ClientHeader"
 import ClientFooter from "./ClientFooter"
+import CreateNewRequest from "./CreateNewRequest/Createnewrequest"
 // import noiticeBoard from "./ClientNoticeBoard/ClientNoticeBoard"
 
 const ClientDashboardLayout = () => {
@@ -31,7 +32,7 @@ const ClientDashboardLayout = () => {
     <div className=" contaoiner-fluid d-flex flex-column flex-lg-row  min-vh-100 " >
       {/* Sidebar */}
       <div
-        className={`bg-dark text-white position-fixed top-0 start-0 h-100 z-3 transition ${
+        className={` text-white position-fixed top-0 start-0 h-100 z-3 transition ${
           sidebarOpen ? "" : "d-none"
         } d-lg-block`}
         style={{ width: "250px" }}
@@ -60,8 +61,8 @@ const ClientDashboardLayout = () => {
 
         {/* Page content */}
         <main className="flex-grow-1 p-3 mt-3 mt-lg-0 bg-danger-subtle">
-          <Outlet />
-
+          {/* <Outlet /> */}
+          
         </main>
 
         {/* Footer */}

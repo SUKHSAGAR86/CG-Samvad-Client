@@ -2,7 +2,24 @@ import React, { useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const ClientAdvtRequest = () => {
+const RequestForm = ({category}) => {
+const cat_text = category?.cat_text || '';
+let category_option = cat_text.split('-')[0].trim();
+
+// Determine form option based on category
+// true - all otpoins visible
+// false - only selected options visible
+let form_option = false;
+if(category_option.toLowerCase() === 'classified'){
+  form_option = true;
+}else if(category_option.toLowerCase() === 'display'){
+   form_option = true;
+}else{
+  form_option = false;
+}
+
+  
+
   const [formData, setFormData] = useState({
     subject: "",
     tender_amt: "",
@@ -110,7 +127,7 @@ const ClientAdvtRequest = () => {
                 />
               </div>
 
-              <div className="col-md-3">
+            { form_option && <div className="col-md-3">
                 <label className="form-label">Tender Amount</label>
                 <input
                   type="number"
@@ -119,7 +136,7 @@ const ClientAdvtRequest = () => {
                   value={formData.tender_amt}
                   onChange={handleChange}
                 />
-              </div>
+              </div>}
 
               <div className="col-md-2">
                 <label className="form-label">Letter Date</label>
@@ -141,6 +158,13 @@ const ClientAdvtRequest = () => {
                   value={formData.schedule_date}
                   onChange={handleChange}
                 />
+              </div>
+              <div className="col-md-2">
+                <label className="form-label">Category</label>
+                <select className="form-select" name="name" id="category">
+                 { !cat_text ? ( <option hidden>--select--</option>) : (<option value={cat_text}>{category_option}</option>)
+                 }
+                </select>
               </div>
             </div>
           </div>
@@ -229,6 +253,6 @@ const ClientAdvtRequest = () => {
   );
 };
 
-export default ClientAdvtRequest;
+export default RequestForm;
 
 
