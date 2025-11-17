@@ -1,8 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const RequestForm = ({category}) => {
+
+// create by default session (localStorage)
+useEffect(()=>{
+  if(!localStorage.getItem("financial_year")){
+    localStorage.setItem("finacial_year","2025-2026");
+  }
+},[]);
+
+const financial_year=localStorage.getItem("financial_year");
+
+// =================session (localStorage) CLOSE AREA========================
+
+
 const cat_text = category?.cat_text || '';
 let category_option = cat_text.split('-')[0].trim();
 
@@ -52,9 +65,16 @@ if(category_option.toLowerCase() === 'classified'){
     setAlert({ show: false, message: "", type: "" });
 
     try {
+       //  ADD financial_year in payload
+       const payload={
+        ...formData,
+        financial_year:financial_year // << added here
+       }
+      //  ADD financial_year in payload
+       
       const res = await axios.post(
         "http://localhost:3080/api/insert/client-advt-request",
-        formData
+payload
       );
 
       setAlert({ show: true, message: res.data.message, type: "success" });
@@ -85,10 +105,6 @@ if(category_option.toLowerCase() === 'classified'){
 
   return (
     <div className="container py-4">
-      <h3 className="text-center mb-4 text-primary fw-bold">
-        Client Advertisement Request
-      </h3>
-
       {alert.show && (
         <div className={`alert alert-${alert.type} text-center`} role="alert">
           {alert.message}
@@ -102,6 +118,14 @@ if(category_option.toLowerCase() === 'classified'){
             <div className="card-header bg-primary text-white">
               Basic Details
             </div>
+{/* show financial_year static */}
+
+<div className="text-center">
+  <label className="form-lable fw-bold">Financial Year</label>
+
+      {financial_year}
+</div>
+{/* =================================== */}
 
             <div className="card-body row g-3">
               <div className="col-md-3">
@@ -138,7 +162,7 @@ if(category_option.toLowerCase() === 'classified'){
                 />
               </div>}
 
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <label className="form-label">Letter Date</label>
                 <input
                   type="date"
@@ -149,7 +173,7 @@ if(category_option.toLowerCase() === 'classified'){
                 />
               </div>
 
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <label className="form-label">Schedule Date</label>
                 <input
                   type="date"
@@ -159,7 +183,7 @@ if(category_option.toLowerCase() === 'classified'){
                   onChange={handleChange}
                 />
               </div>
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <label className="form-label">Category</label>
                 <select className="form-select" name="name" id="category">
                  { !cat_text ? ( <option hidden>--select--</option>) : (<option value={cat_text}>{category_option}</option>)
@@ -167,12 +191,9 @@ if(category_option.toLowerCase() === 'classified'){
                 </select>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Publication Details */}
+            {/* Publication Details */}
         <div className="col-12">
-          <div className="card shadow-sm">
+         {form_option&& <div className="">
             <div className="card-header bg-success text-white">
               Publication Details
             </div>
@@ -223,7 +244,10 @@ if(category_option.toLowerCase() === 'classified'){
                 </div>
               </div>
 
-              <div className="mt-3">
+             
+            </div>
+          </div>}
+           <div className="mt-3 p-4">
                 <label className="form-label fw-bold">Remarks</label>
                 <textarea
                   className="form-control"
@@ -234,9 +258,14 @@ if(category_option.toLowerCase() === 'classified'){
                   rows="4"
                 />
               </div>
-            </div>
-          </div>
         </div>
+          </div>
+
+
+          
+        </div>
+
+        
 
         {/* Submit Button */}
         <div className="text-center mt-3">
@@ -254,5 +283,4 @@ if(category_option.toLowerCase() === 'classified'){
 };
 
 export default RequestForm;
-
 

@@ -35,9 +35,9 @@ const CreateNewRequest = () => {
           <p className="mt-2">Loading categories...</p>
         </div>
       ) : (
-        <div className="row g-4">
+        <div className="row ">
           {/* Left Column: List of categories */}
-          <div className="col-md-5">
+          <div className="col-md-4 mt-4">
             <div className="list-group shadow-sm">
               {categories.map((item, index) => (
                 <button
@@ -48,29 +48,25 @@ const CreateNewRequest = () => {
                   onClick={() => setSelectedCategory(item)}
                 >
                   <div className="d-flex justify-content-between align-items-center">
-                    <span className="fw-semibold">{item.cat_text}</span>
-                    {/* <span className="badge bg-light text-dark">{item.cat_id}</span> */}
+                    <span className="fw-semibold" style={{fontSize:"13px"}}>{item.cat_text}</span>
+               
                   </div>
                 </button>
               ))}
             </div>
+
           </div>
 
           {/* Right Column: Selected category details */}
-          <div className="col-md-7">
-            {selectedCategory ? (
-              <div className="card shadow-lg border-0 text-center">
-                <div className="card-body">
-                   <p className="fs-5">
-                    {selectedCategory.cat_text}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="text-muted text-center p-5 border rounded shadow-sm">
-                <p>Select a category from the left to view details.</p>
-              </div>
-            )}
+          <div className="col-md-8">
+          
+            {selectedCategory && (
+  <div className="card shadow-sm border-0 text-center">
+    <div className="">
+      <p className="fs-6">{selectedCategory.cat_text}</p>
+    </div>
+  </div>
+)}
 
 {/* request form start*/}
 

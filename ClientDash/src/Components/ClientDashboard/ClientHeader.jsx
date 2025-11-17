@@ -19,7 +19,7 @@ const ClientHeader = ({ toggleSidebar }) => {
   };
 
   return (
-    <header className=" border-bottom sticky-top d-flex align-items-center justify-content-between p-3 px-3 shadow-sm z-3">
+    <header className=" border-bottom sticky-top d-flex align-items-center justify-content-between p-3 px-3 shadow-sm z-3" style={{backgroundColor:"#272757"}}>
       {/* Sidebar Toggle (Mobile) */}
       <button
         className="btn btn-outline-secondary d-lg-none"
