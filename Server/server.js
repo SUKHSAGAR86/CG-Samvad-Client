@@ -22,7 +22,7 @@ const authRoute = require("./Routes/auth.route.js");
 
 
 const createNewRequest=require("./Routes/createNewRequest.route.js");
-const insertClientAdvtRequest=require("./Routes/InsertClientAdvtRequest.route.js");
+const insertClientAdvtRequest = require("./Routes/InsertClientAdvtRequest.route.js")
 const clientNotices=require("./Routes/clientNotices.route.js");
 const newsRateList=require("./Routes/newsRateList.route.js");
 
@@ -42,7 +42,7 @@ app.use("/api/auth", authRoute);
 
 
 app.use("/api",createNewRequest);
-app.use("/api",insertClientAdvtRequest);
+app.use("/api",insertClientAdvtRequest)
 app.use("/api",clientNotices);
 app.use("/api",newsRateList);
 

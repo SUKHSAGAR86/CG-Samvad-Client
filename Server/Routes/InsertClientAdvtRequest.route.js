@@ -1,7 +1,19 @@
-const express=require("express")
-const { insertClientAdvtRequest } = require("../Controllers/InsertClientAdvtRequest.controller")
+// const express=require("express")
+// const {insertClientAdvtRequest}=require("../Controllers/InsertClientAdvtRequest.controller")
 
-const router=express.Router()
-router.post("/insert/client-advt-request",insertClientAdvtRequest);
+// const router=express.Router()
+// router.post("/insert/client-advt-request",insertClientAdvtRequest);
 
-module.exports=router;
+
+// module.exports=router;
+
+
+
+const express = require("express");
+const { insertClientAdvtRequest } = require("../Controllers/InsertClientAdvtRequest.controller");
+
+const router = express.Router();
+
+router.post("/insert/client-advt-request", insertClientAdvtRequest);
+
+module.exports = router;

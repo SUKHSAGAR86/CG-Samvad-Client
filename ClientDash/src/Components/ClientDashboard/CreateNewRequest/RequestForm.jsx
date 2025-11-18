@@ -7,7 +7,7 @@ const RequestForm = ({category}) => {
 // create by default session (localStorage)
 useEffect(()=>{
   if(!localStorage.getItem("financial_year")){
-    localStorage.setItem("finacial_year","2025-2026");
+    localStorage.setItem("financial_year","2025-2026");
   }
 },[]);
 
@@ -39,6 +39,7 @@ if(category_option.toLowerCase() === 'classified'){
     letter_no: "",
     letter_date: "",
     schedule_date: "",
+    ref_Category_text:"",
     remarks: "",
     print_in_national_np: "",
     print_in_local_np: "",
@@ -87,6 +88,7 @@ payload
         letter_date: "",
         schedule_date: "",
         remarks: "",
+        ref_Category_text:"",
         print_in_national_np: "",
         print_in_local_np: "",
         print_in_state_np: "",
@@ -102,6 +104,8 @@ payload
       setLoading(false);
     }
   };
+
+  
 
   return (
     <div className="container py-4">
@@ -121,9 +125,10 @@ payload
 {/* show financial_year static */}
 
 <div className="text-center">
-  <label className="form-lable fw-bold">Financial Year</label>
+  <label className="form-lable fw-bold">Financial Year <span> {financial_year} </span></label>
 
-      {financial_year}
+      {/* <input type="text" className="form-control" name="fiancial_Year"
+      value={financial_year}/> */}
 </div>
 {/* =================================== */}
 
@@ -189,6 +194,10 @@ payload
                  { !cat_text ? ( <option hidden>--select--</option>) : (<option value={cat_text}>{category_option}</option>)
                  }
                 </select>
+
+
+
+
               </div>
             </div>
             {/* Publication Details */}
