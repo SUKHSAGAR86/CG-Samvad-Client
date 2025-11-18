@@ -64,6 +64,7 @@ const CreateNewRequest = () => {
   <div className="card shadow-sm border-0 text-center">
     <div className="">
       <p className="fs-6">{selectedCategory.cat_text}</p>
+      {/* <p>{selectedCategory.cat_id}</p> */}
     </div>
   </div>
 )}
