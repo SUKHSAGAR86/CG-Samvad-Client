@@ -1,0 +1,25 @@
+.table-custom thead th {
+  background: #0d6efd;
+  color: white;
+  font-size: 14px;
+}
+
+.table-custom tbody tr:nth-child(even) {
+  background-color: #f3f6f9;
+}
+
+.table-custom tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.table-custom tbody tr:hover {
+  background-color: #dce8ff;
+}
+
+.action-btn {
+  font-size: 13px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-right: 6px;
+  cursor: pointer;
+}

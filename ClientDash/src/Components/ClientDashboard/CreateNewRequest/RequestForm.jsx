@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -80,50 +79,113 @@ const RequestForm = ({ category }) => {
   /* ---------------------------------------
     Submit Form
   -----------------------------------------*/
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setAlert({ show: false, message: "", type: "" });
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     setAlert({ show: false, message: "", type: "" });
 
-    try {
-      const payload = {
-        ...formData,
-        financial_year: financial_year,
-        user_id: user_id,
-      };
+//     try {
+//       const payload = {
+//         ...formData,
+//         financial_year: financial_year,
+//         user_id: user_id,
+//       };
 
-      const res = await axios.post(
-        "http://localhost:3080/api/insert/client-advt-request",
-        payload
-      );
+//       const res = await axios.post(
+//         "http://localhost:3080/api/client-advt-request",
+//         payload
+//       );
 
-      setAlert({ show: true, message: res.data.message, type: "success" });
+// //       setAlert({
+// //   show: true,
+// //   message: `Data submitted successfully (Ref ID: ${res.data.ref_id})`,
+// //   type: "success",
+// // });
 
-      // Reset
-      setFormData({
-        subject: "",
-        tender_amt: "",
-        letter_no: "",
-        letter_date: "",
-        schedule_date: "",
-        remarks: "",
-        ref_Category_id: "",
-        ref_Category_text: "",
-        print_in_national_np: "",
-        print_in_local_np: "",
-        print_in_state_np: "",
-        print_in_other_np: "",
-      });
-    } catch (err) {
-      setAlert({
-        show: true,
-        message: err.response?.data?.message || "Error submitting form",
-        type: "danger",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+// setAlert({
+//   show: true,
+//   message: `Data submitted successfully (Ref ID: ${res.data.returnval})`,
+//   type: "success",
+// });
+
+//       // Reset
+//       setFormData({
+//         subject: "",
+//         tender_amt: "",
+//         letter_no: "",
+//         letter_date: "",
+//         schedule_date: "",
+//         remarks: "",
+//         ref_Category_id: "",
+//         ref_Category_text: "",
+//         print_in_national_np: "",
+//         print_in_local_np: "",
+//         print_in_state_np: "",
+//         print_in_other_np: "",
+//       });
+//     } catch (err) {
+//       setAlert({
+//         show: true,
+//         message: err.response?.data?.message || "Error submitting form",
+//         type: "danger",
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setAlert({ show: false, message: "", type: "" });
+
+  try {
+    const payload = {
+      ...formData,
+      financial_year: financial_year,
+      user_id: user_id,
+    };
+
+    const res = await axios.post(
+      "http://localhost:3080/api/client-advt-request",
+      payload
+    );
+
+    // ✅ SHOW NEW REF_ID (correct!)
+    setAlert({
+      show: true,
+      message: `Data submitted successfully (Ref ID: ${res.data.ref_id})`,
+      type: "success",
+    });
+
+
+
+    // Reset
+    setFormData({
+      subject: "",
+      tender_amt: "",
+      letter_no: "",
+      letter_date: "",
+      schedule_date: "",
+      remarks: "",
+      ref_Category_id: "",
+      ref_Category_text: "",
+      print_in_national_np: "",
+      print_in_local_np: "",
+      print_in_state_np: "",
+      print_in_other_np: "",
+    });
+  } catch (err) {
+    setAlert({
+      show: true,
+      message: err.response?.data?.message || "Error submitting form",
+      type: "danger",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   /* ---------------------------------------
     UI
@@ -145,7 +207,9 @@ const RequestForm = ({ category }) => {
 
             {/* Financial Year Static View */}
             <div className="text-center mt-2">
-              <label className="fw-bold">Financial Year: {financial_year}</label>
+              <label className="fw-bold">
+                Financial Year: {financial_year}
+              </label>
             </div>
 
             <div className="card-body row g-3">
@@ -325,4 +389,3 @@ const RequestForm = ({ category }) => {
 };
 
 export default RequestForm;
-

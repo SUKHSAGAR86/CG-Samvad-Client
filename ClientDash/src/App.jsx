@@ -5,6 +5,7 @@ import ClientDashboardLayout from "./Components/ClientDashboard/ClientDashboardL
 import ClientNoticeBoard from "./Components/ClientDashboard/ClientNoticeBoard";
 import CreateNewRequest from "./Components/ClientDashboard/CreateNewRequest/Createnewrequest";
 import RequestForm from "./Components/ClientDashboard/CreateNewRequest/requestForm";
+import ViewRequests from "./Components/ClientDashboard/CreateNewRequest/get";
 
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/requestform" element={<RequestForm />} />
         <Route path="/notice" element={<ClientNoticeBoard />} />
         <Route path="/newrequest" element={<CreateNewRequest />} />
+        <Route path="/get" element={<ViewRequests/>}/>
         {/* <Route path="/newsratelist" element={<NewsRatesList />} /> */}
 
         
