@@ -1,197 +1,227 @@
-// const { pool, sql, poolConnect } = require("../Database/dbConfig.js");
 
-// /**
-//  * 🎯 Add SQL Parameters (Perfectly Aligned With SP)
-//  */
-// function addSqlParams(request, body) {
-//   // Basic Fields
-//   request.input("ref_id", sql.VarChar(12), body.ref_id || null);
-//   request.input("financial_year", sql.VarChar(9), body.financial_year || null);
-//   request.input("subject", sql.NVarChar(200), body.subject || null);
+const { pool, sql, poolConnect } = require("../Database/dbConfig");
 
-//   // Auto-Fetched Fields (SP handles internally)
-//   request.input("client_sno_key", sql.BigInt, body.client_sno_key || null);
-//   request.input("client_cd", sql.VarChar(10), body.client_cd || null);
+const getClientIp = (req) => {
+  return (
+    req.headers["x-forwarded-for"]?.split(",")[0] ||   // proxy / hosting
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    (req.connection.socket ? req.connection.socket.remoteAddress : null)
+  );
+};
 
-//   request.input("tender_amt", sql.Numeric(10, 2), body.tender_amt ?? 0);
-//   request.input("base_dept_code", sql.VarChar(4), body.base_dept_code || null);
-//   request.input("office_code", sql.VarChar(10), body.office_code || null);
-//   request.input("office_level_code", sql.VarChar(10), body.office_level_code || null);
-//   request.input("section_code", sql.VarChar(11), body.section_code || null);
-//   request.input("district_code", sql.VarChar(2), body.district_code || null);
-
-//   // Letter fields
-//   request.input("letter_no", sql.NVarChar(150), body.letter_no || null);
-
-//   request.input("letter_date", sql.Date,body.letter_date ? new Date(body.letter_date) : null  );
-
-//   request.input("caption_cd", sql.VarChar(3), body.caption_cd || null);
-
-//   request.input("schedule_date",sql.Date,body.schedule_date ? new Date(body.schedule_date) : null);
-
-//   // System info
-//   request.input("ip_address", sql.VarChar(20), body.ip_address || null);
-//   request.input("user_id", sql.VarChar(5), body.user_id || null);
-
-//   request.input("entry_date",sql.Date,body.entry_date ? new Date(body.entry_date) : null
-//   );
-
-//   request.input("entry_time", sql.VarChar(20), body.entry_time || null);
-//   request.input("remarks", sql.NVarChar(300), body.remarks || null);
-
-//   request.input("fixed_date", sql.VarChar(1), body.fixed_date || null);
+// --------------------------- INSERT — action = 'post'----------------------------------
 
 
-//   request.input("print_in_national_np", sql.Int, body.print_in_national_np ?? 0);
-//   request.input("print_in_local_np", sql.Int, body.print_in_local_np ?? 0);
-//   request.input("print_in_state_np", sql.Int, body.print_in_state_np ?? 0);
-//   request.input("print_in_other_np", sql.Int, body.print_in_other_np ?? 0);
-//   request.input("print_in_other_remark",sql.NVarChar(200),body.print_in_other_remark || null);
-
-//   request.input("delete_status", sql.Char(1), body.delete_status || "N");
-//   request.input("forward_status", sql.Char(1), body.forward_status || "N");
-
-//   request.input("ref_Category_text", sql.VarChar(50), body.ref_Category_text || null);
-//   request.input("ref_Category_id", sql.VarChar(3), body.ref_Category_id || null);
-
-// request.input("action", sql.VarChar(10), "post");
-
-//   // OUTPUT PARAMETER
-//   request.output("returnval", sql.Int);
-// }
-
-// /**
-//  *Controller Function
-//  */
-// const insertClientAdvtRequest = async (req, res) => {
-//   try {
-//     await poolConnect;
-
-//     const request = pool.request();
-
-//     // Add inputs to SQL
-//     addSqlParams(request, req.body);
-
-//     // Execute Stored Procedure
-//     const result = await request.execute("Sp_Insert_Client_Advt_Request");
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "data submited successfully",
-//       data: result.recordset || [],
-//       output: result.output,
-//       returnval: result.output.returnval,
-//     });
-
-//   } catch (error) {
-//     console.error("SP Error:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Error executing SP",
-//       error: error.message,
-//     });
-//   }
-// };
-
-// module.exports = { insertClientAdvtRequest,};
-
-
-
-// =============================test 1=============================
-const { pool, sql, poolConnect } = require("../Database/dbConfig.js");
-
-/* ---------------------------------------------------------
-   🎯 Add SQL Parameters (Perfectly Aligned With SP)
---------------------------------------------------------- */
-function addSqlParams(request, body) {
-  // Basic Fields
-  request.input("financial_year", sql.VarChar(9), body.financial_year || null);
-  request.input("subject", sql.NVarChar(200), body.subject || null);
-
-  // Auto-Fetched Fields
-  request.input("client_sno_key", sql.BigInt, body.client_sno_key || null);
-  request.input("client_cd", sql.VarChar(10), body.client_cd || null);
-
-  request.input("tender_amt", sql.Numeric(10, 2), body.tender_amt ?? 0);
-  request.input("base_dept_code", sql.VarChar(4), body.base_dept_code || null);
-  request.input("office_code", sql.VarChar(10), body.office_code || null);
-  request.input("office_level_code", sql.VarChar(10), body.office_level_code || null);
-  request.input("section_code", sql.VarChar(11), body.section_code || null);
-  request.input("district_code", sql.VarChar(2), body.district_code || null);
-
-  // Letter fields
-  request.input("letter_no", sql.NVarChar(150), body.letter_no || null);
-  request.input("letter_date", sql.Date, body.letter_date ? new Date(body.letter_date) : null);
-  request.input("caption_cd", sql.VarChar(3), body.caption_cd || null);
-
-  request.input("schedule_date", sql.Date, body.schedule_date ? new Date(body.schedule_date) : null);
-
-  // System info
-  request.input("ip_address", sql.VarChar(20), body.ip_address || null);
-  request.input("user_id", sql.VarChar(5), body.user_id || null);
-  request.input("entry_date", sql.Date, body.entry_date ? new Date(body.entry_date) : null);
-  request.input("entry_time", sql.VarChar(20), body.entry_time || null);
-  request.input("remarks", sql.NVarChar(300), body.remarks || null);
-
-  request.input("fixed_date", sql.VarChar(1), body.fixed_date || null);
-
-  request.input("print_in_national_np", sql.Int, body.print_in_national_np ?? 0);
-  request.input("print_in_local_np", sql.Int, body.print_in_local_np ?? 0);
-  request.input("print_in_state_np", sql.Int, body.print_in_state_np ?? 0);
-  request.input("print_in_other_np", sql.Int, body.print_in_other_np ?? 0);
-
-  request.input("print_in_other_remark", sql.NVarChar(200), body.print_in_other_remark || null);
-
-  request.input("delete_status", sql.Char(1), body.delete_status || "N");
-  request.input("forward_status", sql.Char(1), body.forward_status || "N");
-
-  request.input("ref_Category_text", sql.VarChar(50), body.ref_Category_text || null);
-  request.input("ref_Category_id", sql.VarChar(3), body.ref_Category_id || null);
-
-  // Action
-  request.input("action", sql.VarChar(10), body.action);
-
-  // OUTPUT PARAMETERS
-  request.output("ref_id", sql.VarChar(12));  // returned new generated id
-  request.output("returnval", sql.Int);
-}
-
-/* ---------------------------------------------------------
-   🟢 Controller: Insert / Update ClientAdvtRequest
---------------------------------------------------------- */
 const insertClientAdvtRequest = async (req, res) => {
   try {
     await poolConnect;
 
+    const body = req.body;
+    const userIp = getClientIp(req);
+
     const request = pool.request();
 
-    // Add all SP input/output parameters
-    addSqlParams(request, req.body);
+    request.input("financial_year", sql.VarChar(9), body.financial_year);
+    request.input("subject", sql.NVarChar(200), body.subject);
+    request.input("client_sno_key", sql.BigInt, body.client_sno_key);
+    request.input("client_cd", sql.VarChar(10), body.client_cd);
+    request.input("tender_amt", sql.Numeric(10, 2), body.tender_amt);
+    request.input("base_dept_code", sql.VarChar(4), body.base_dept_code);
+    request.input("office_code", sql.VarChar(10), body.office_code);
+    request.input("office_level_code", sql.VarChar(10), body.office_level_code);
+    request.input("section_code", sql.VarChar(11), body.section_code);
+    request.input("district_code", sql.VarChar(2), body.district_code);
+    request.input("letter_no", sql.NVarChar(150), body.letter_no);
+    request.input("letter_date", sql.Date, body.letter_date);
+    request.input("caption_cd", sql.VarChar(3), body.caption_cd);
+    request.input("schedule_date", sql.Date, body.schedule_date);
 
-    // Execute Stored Procedure
+    // AUTO IP
+    request.input("ip_address", sql.VarChar(20), userIp);
+
+    request.input("user_id", sql.VarChar(5), body.user_id);
+    request.input("entry_date", sql.Date, body.entry_date);
+    request.input("entry_time", sql.VarChar(20), body.entry_time);
+    request.input("remarks", sql.NVarChar(300), body.remarks);
+    request.input("fixed_date", sql.VarChar(1), body.fixed_date);
+    request.input("print_in_national_np", sql.Int, body.print_in_national_np);
+    request.input("print_in_local_np", sql.Int, body.print_in_local_np);
+    request.input("print_in_state_np", sql.Int, body.print_in_state_np);
+    request.input("print_in_other_np", sql.Int, body.print_in_other_np);
+    request.input("print_in_other_remark", sql.NVarChar(200), body.print_in_other_remark);
+    request.input("delete_status", sql.Char(1), "N");
+    request.input("forward_status", sql.Char(1), body.forward_status);
+    request.input("ref_Category_text", sql.VarChar(50), body.ref_Category_text);
+    request.input("ref_Category_id", sql.VarChar(3), body.ref_Category_id);
+
+    request.input("action", sql.VarChar(10), "post");
+    request.output("returnval", sql.Int);
+    request.output("ref_id", sql.VarChar(12));
+
     const result = await request.execute("Sp_Insert_Client_Advt_Request");
 
-    // Get the new ref_id from OUTPUT parameter
-    const newRefId = result.output.ref_id;
-
-
     return res.status(200).json({
-      success: true,
-      message: "Data submitted successfully",
-      ref_id: newRefId,   // <-- VERY IMPORTANT
-      data: result.recordset || [],
-      output: result.output,
-      returnval: result.output.returnval,
+      status: result.output.returnval,
+      message: result.output.returnval === 1 ? "Inserted successfully" : "Insert failed",
+      ref_id: result.output.ref_id,
+      ip_used: userIp,
     });
 
-  } catch (error) {
-    console.error("SP Error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Error executing SP",
-      error: error.message,
-    });
+  } catch (err) {
+    console.error("Insert Error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-module.exports = { insertClientAdvtRequest };
+
+// -------------------------GET ALL — action = 'get'------------------------------------
+
+const getAllRequests = async (req, res) => {
+  try {
+    await poolConnect;
+
+    const { user_id, financial_year } = req.query;
+
+    const request = pool.request();
+    request.input("user_id", sql.VarChar(5), user_id);
+    request.input("financial_year", sql.VarChar(9), financial_year);
+    request.input("ref_id", sql.VarChar(10), "");
+    request.input("action", sql.VarChar(10), "get");
+
+    const result = await request.execute("Sp_Insert_Client_Advt_Request");
+
+    return res.status(200).json(result.recordset);
+
+  } catch (err) {
+    console.error("Get All Error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+// ------------------------------GET BY ID — action = 'get_by_id'-------------------------------
+const getRequestById = async (req, res) => {
+  try {
+    await poolConnect;
+
+    const { ref_id } = req.params;
+    const { user_id, financial_year } = req.query;
+
+    const request = pool.request();
+    request.input("ref_id", sql.VarChar(12), ref_id);
+    request.input("user_id", sql.VarChar(5), user_id);
+    request.input("financial_year", sql.VarChar(9), financial_year);
+    request.input("action", sql.VarChar(10), "get_by_id");
+
+    const result = await request.execute("Sp_Insert_Client_Advt_Request");
+
+    return res.status(200).json(result.recordset[0] || {});
+
+  } catch (err) {
+    console.error("Get By ID Error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+// ------------------------UPDATE — action = 'update'-------------------------------------
+
+const updateClientAdvtRequest = async (req, res) => {
+  try {
+    await poolConnect;
+
+    const body = req.body;
+    const userIp = getClientIp(req);
+
+    const request = pool.request();
+
+    request.input("ref_id", sql.VarChar(12), body.ref_id);
+    request.input("financial_year", sql.VarChar(9), body.financial_year);
+    request.input("subject", sql.NVarChar(200), body.subject);
+    request.input("ref_Category_id", sql.VarChar(3), body.ref_Category_id);
+    request.input("ref_Category_text", sql.VarChar(50), body.ref_Category_text);
+    request.input("tender_amt", sql.Numeric(10, 2), body.tender_amt);
+    request.input("letter_no", sql.NVarChar(150), body.letter_no);
+    request.input("letter_date", sql.Date, body.letter_date);
+    request.input("schedule_date", sql.Date, body.schedule_date);
+    request.input("remarks", sql.NVarChar(300), body.remarks);
+    request.input("fixed_date", sql.VarChar(1), body.fixed_date);
+    request.input("print_in_national_np", sql.Int, body.print_in_national_np);
+    request.input("print_in_local_np", sql.Int, body.print_in_local_np);
+    request.input("print_in_state_np", sql.Int, body.print_in_state_np);
+    request.input("print_in_other_np", sql.Int, body.print_in_other_np);
+    request.input("print_in_other_remark", sql.NVarChar(200), body.print_in_other_remark);
+
+    // AUTO IP
+    request.input("ip_address", sql.VarChar(20), userIp);
+
+    request.input("action", sql.VarChar(10), "update");
+    request.output("returnval", sql.Int);
+
+    const result = await request.execute("Sp_Insert_Client_Advt_Request");
+
+    return res.status(200).json({
+      status: result.output.returnval,
+      message: result.output.returnval === 1 ? "Updated successfully" : "Update failed",
+      ip_used: userIp,
+    });
+
+  } catch (err) {
+    console.error("Update Error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+// --------------DELETE — action = 'delete'-----------------------------------------------
+
+const deleteClientAdvtRequest = async (req, res) => {
+  try {
+    await poolConnect;
+
+    const { ref_id } = req.params;
+    const { financial_year, user_id } = req.body;
+
+    const userIp = getClientIp(req);
+
+    const request = pool.request();
+
+    request.input("ref_id", sql.VarChar(12), ref_id);
+    request.input("financial_year", sql.VarChar(9), financial_year);
+
+    // AUTO IP
+    request.input("ip_address", sql.VarChar(20), userIp);
+
+    request.input("user_id", sql.VarChar(5), user_id);
+    request.input("delete_status", sql.Char(1), "Y");
+    request.input("action", sql.VarChar(20), "delete");
+
+    request.output("returnval", sql.Int);
+
+    const result = await request.execute("Sp_Insert_Client_Advt_Request");
+
+    return res.status(200).json({
+      status: result.output.returnval,
+      ref_id,
+      ip_used: userIp,
+      message:
+        result.output.returnval === 1
+          ? `Deleted successfully (Ref ID: ${ref_id})`
+          : "Delete failed",
+    });
+
+  } catch (err) {
+    console.error("Delete Error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+module.exports = {
+  insertClientAdvtRequest,
+  getAllRequests,
+  getRequestById,
+  updateClientAdvtRequest,
+  deleteClientAdvtRequest,
+};

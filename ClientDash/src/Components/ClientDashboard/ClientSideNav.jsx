@@ -3,7 +3,7 @@ import ClientSideNavbar from "./ClientSideNavbar";
 
 const ClientSideNav = () => {
   return (
-    <div>
+    <div style={{backgroundColor:"#272757"}}>
       <div className="border-bottom sticky-top d-flex align-items-center justify-content-center p-3 px-3 shadow-sm z-3">
         <div className="me-2"  >
           <img

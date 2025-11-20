@@ -1,11 +1,14 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";   //  Add this
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const RequestForm = ({ category }) => {
-  /* ---------------------------------------
-     Create session values in localStorage
-  -----------------------------------------*/
+  const navigate = useNavigate();      //  For redirect
+
+
+// ===============Create session values in localStorage=============
   useEffect(() => {
     if (!localStorage.getItem("financial_year")) {
       localStorage.setItem("financial_year", "2025-2026");
@@ -13,27 +16,36 @@ const RequestForm = ({ category }) => {
     if (!localStorage.getItem("user_id")) {
       localStorage.setItem("user_id", "00002");
     }
+
+    // ================== Fetch IP==================
+    const getIP = async () => {
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+        setFormData((prev) => ({
+          ...prev,
+          ip_address: data.ip,
+        }));
+      } catch (err) {
+        console.error("IP Fetch Error:", err);
+      }
+    };
+
+    getIP();
   }, []);
 
   const financial_year = localStorage.getItem("financial_year");
   const user_id = localStorage.getItem("user_id");
 
-  /* ---------------------------------------
-     Category Handling
-  -----------------------------------------*/
+  // ===================== Category Handling===================
   const cat_text = category?.cat_text || "";
   const category_option = cat_text ? cat_text.split("-")[0].trim() : "";
-  const cat_id = category?.cat_id || ""; // FIXED 🔥
+  const cat_id = category?.cat_id || "";
 
-  let form_option =
-    category_option.toLowerCase() === "classified" ||
-    category_option.toLowerCase() === "display"
-      ? true
-      : false;
+  const form_option =
+    ["classified", "display"].includes(category_option.toLowerCase());
 
-  /* ---------------------------------------
-     Auto-set category in formData
-  -----------------------------------------*/
+// ================Auto-set category in formData==================
   useEffect(() => {
     if (cat_text) {
       setFormData((prev) => ({
@@ -44,9 +56,8 @@ const RequestForm = ({ category }) => {
     }
   }, [cat_text]);
 
-  /* ---------------------------------------
-     Form State
-  -----------------------------------------*/
+ //===================Form State=======================
+ 
   const [formData, setFormData] = useState({
     subject: "",
     tender_amt: "",
@@ -60,14 +71,16 @@ const RequestForm = ({ category }) => {
     print_in_local_np: "",
     print_in_state_np: "",
     print_in_other_np: "",
+    ip_address: "",
   });
 
-  const [alert, setAlert] = useState({ show: false, message: "", type: "" });
   const [loading, setLoading] = useState(false);
 
-  /* ---------------------------------------
-    Handle Change
-  -----------------------------------------*/
+  //============Popup state=================================
+  const [showModal, setShowModal] = useState(false);
+  const [savedRefId, setSavedRefId] = useState("");
+
+//  ================== Handle Change=======================
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -76,303 +89,256 @@ const RequestForm = ({ category }) => {
     });
   };
 
-  /* ---------------------------------------
-    Submit Form
-  -----------------------------------------*/
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setAlert({ show: false, message: "", type: "" });
 
-//     try {
-//       const payload = {
-//         ...formData,
-//         financial_year: financial_year,
-//         user_id: user_id,
-//       };
+  // =================== Submit Form==================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-//       const res = await axios.post(
-//         "http://localhost:3080/api/client-advt-request",
-//         payload
-//       );
+    try {
+      const payload = {
+        ...formData,
+        financial_year: financial_year,
+        user_id: user_id,
+      };
 
-// //       setAlert({
-// //   show: true,
-// //   message: `Data submitted successfully (Ref ID: ${res.data.ref_id})`,
-// //   type: "success",
-// // });
+      const res = await axios.post(
+        "http://localhost:3080/api/client-advt-request",
+        payload
+      );
 
-// setAlert({
-//   show: true,
-//   message: `Data submitted successfully (Ref ID: ${res.data.returnval})`,
-//   type: "success",
-// });
+      //  Save ref_id to open next form
+      setSavedRefId(res.data.ref_id);
 
-//       // Reset
-//       setFormData({
-//         subject: "",
-//         tender_amt: "",
-//         letter_no: "",
-//         letter_date: "",
-//         schedule_date: "",
-//         remarks: "",
-//         ref_Category_id: "",
-//         ref_Category_text: "",
-//         print_in_national_np: "",
-//         print_in_local_np: "",
-//         print_in_state_np: "",
-//         print_in_other_np: "",
-//       });
-//     } catch (err) {
-//       setAlert({
-//         show: true,
-//         message: err.response?.data?.message || "Error submitting form",
-//         type: "danger",
-//       });
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+      //  Show modal
+      setShowModal(true);
 
+      // Reset form
+      setFormData({
+        subject: "",
+        tender_amt: "",
+        letter_no: "",
+        letter_date: "",
+        schedule_date: "",
+        remarks: "",
+        ref_Category_id: "",
+        ref_Category_text: "",
+        print_in_national_np: "",
+        print_in_local_np: "",
+        print_in_state_np: "",
+        print_in_other_np: "",
+        ip_address: formData.ip_address,
+      });
+    } catch (err) {
+      alert(err.response?.data?.message || "Error submitting form");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setAlert({ show: false, message: "", type: "" });
+// ============== Handle OK click → redirect with ref_id================
+   
+   const handleOk = () => {
+    setShowModal(false);
+    navigate(`/next-form/${savedRefId}`); //  Redirect
+  };
 
-  try {
-    const payload = {
-      ...formData,
-      financial_year: financial_year,
-      user_id: user_id,
-    };
-
-    const res = await axios.post(
-      "http://localhost:3080/api/client-advt-request",
-      payload
-    );
-
-    // ✅ SHOW NEW REF_ID (correct!)
-    setAlert({
-      show: true,
-      message: `Data submitted successfully (Ref ID: ${res.data.ref_id})`,
-      type: "success",
-    });
-
-
-
-    // Reset
-    setFormData({
-      subject: "",
-      tender_amt: "",
-      letter_no: "",
-      letter_date: "",
-      schedule_date: "",
-      remarks: "",
-      ref_Category_id: "",
-      ref_Category_text: "",
-      print_in_national_np: "",
-      print_in_local_np: "",
-      print_in_state_np: "",
-      print_in_other_np: "",
-    });
-  } catch (err) {
-    setAlert({
-      show: true,
-      message: err.response?.data?.message || "Error submitting form",
-      type: "danger",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
-  /* ---------------------------------------
-    UI
-  -----------------------------------------*/
+  
   return (
     <div className="container py-4">
-      {alert.show && (
-        <div className={`alert alert-${alert.type} text-center`} role="alert">
-          {alert.message}
-        </div>
-      )}
 
-      <form onSubmit={handleSubmit} className="row g-3">
-        <div className="col-12">
-          <div className="card shadow-sm">
-            <div className="card-header bg-primary text-white">
-              Basic Details
-            </div>
+      {/* Popup Modal */}
+      {showModal && (
+        <div
+          className="modal fade show d-block"
+          style={{ background: "rgba(0,0,0,0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
 
-            {/* Financial Year Static View */}
-            <div className="text-center mt-2">
-              <label className="fw-bold">
-                Financial Year: {financial_year}
-              </label>
-            </div>
-
-            <div className="card-body row g-3">
-              <div className="col-md-3">
-                <label className="form-label">Letter No</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="letter_no"
-                  value={formData.letter_no}
-                  onChange={handleChange}
-                />
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">Success</h5>
               </div>
 
-              <div className="col-md-5">
-                <label className="form-label">Subject</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                />
+              <div className="modal-body text-center">
+                <h5>Data submitted successfully!</h5>
+                <p className="fw-bold">Ref ID: {savedRefId}</p>
               </div>
 
-              {form_option && (
-                <div className="col-md-3">
-                  <label className="form-label">Tender Amount</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="tender_amt"
-                    value={formData.tender_amt}
-                    onChange={handleChange}
-                  />
-                </div>
-              )}
-
-              <div className="col-md-3">
-                <label className="form-label">Letter Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  name="letter_date"
-                  value={formData.letter_date}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-md-3">
-                <label className="form-label">Schedule Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  name="schedule_date"
-                  value={formData.schedule_date}
-                  onChange={handleChange}
-                />
-              </div>
-
-              {/* Category */}
-              <div className="col-md-3">
-                <label className="form-label">Category</label>
-                <select
-                  className="form-select"
-                  name="ref_Category_text"
-                  value={formData.ref_Category_text}
-                  onChange={handleChange}
+              <div className="modal-footer">
+                <button
+                  className="btn btn-success px-4"
+                  onClick={handleOk}
                 >
-                  {!cat_text ? (
-                    <option hidden>--select--</option>
-                  ) : (
-                    <option value={category_option}>{category_option}</option>
-                  )}
-                </select>
+                  OK
+                </button>
               </div>
 
-              {/* Category ID */}
-              <div className="col-md-3">
-                <label className="form-label">Category ID</label>
-                <select
-                  className="form-select"
-                  name="ref_Category_id"
-                  value={formData.ref_Category_id}
-                  onChange={handleChange}
-                >
-                  {!cat_text ? (
-                    <option hidden>--select--</option>
-                  ) : (
-                    <option value={cat_id}>{cat_id}</option>
-                  )}
-                </select>
-              </div>
-            </div>
-
-            {/* Publication Details */}
-            {form_option && (
-              <div className="">
-                <div className="card-header bg-success text-white">
-                  Publication Details
-                </div>
-                <div className="card-body row">
-                  <div className="col-md-3 mb-3">
-                    <label className="form-label">National Newspapers</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      name="print_in_national_np"
-                      value={formData.print_in_national_np}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-3 mb-3">
-                    <label className="form-label">Local Newspapers</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      name="print_in_local_np"
-                      value={formData.print_in_local_np}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-3 mb-3">
-                    <label className="form-label">State Newspapers</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      name="print_in_state_np"
-                      value={formData.print_in_state_np}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-3 mb-3">
-                    <label className="form-label">Other Newspapers</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      name="print_in_other_np"
-                      value={formData.print_in_other_np}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="p-4">
-              <label className="form-label fw-bold">Remarks</label>
-              <textarea
-                className="form-control"
-                name="remarks"
-                value={formData.remarks}
-                onChange={handleChange}
-                rows="4"
-                placeholder="Enter remarks here..."
-              />
             </div>
           </div>
         </div>
+      )}
+
+      {/* FORM UI */}
+      <form onSubmit={handleSubmit} className="row g-3">
+
+         <form onSubmit={handleSubmit} className="row g-3">
+         <div className="col-12">
+           <div className="card shadow-sm">
+             <div className="card-header bg-primary text-white">
+               Basic Details
+             </div>
+             <div className="text-center mt-2">
+               <label className="fw-bold">Financial Year: {financial_year}</label>
+             </div>
+             <div className="card-body row g-3">
+               <div className="col-md-3">
+                 <label className="form-label">Letter No</label>
+                 <input
+                   type="text"
+                   className="form-control"
+                   name="letter_no"
+                   value={formData.letter_no}
+                   onChange={handleChange}
+                 />
+               </div>
+               <div className="col-md-5">
+                 <label className="form-label">Subject</label>
+                 <input
+                   type="text"
+                   className="form-control"
+                   name="subject"
+                   value={formData.subject}
+                   onChange={handleChange}
+                   required
+                 />
+               </div>
+               {form_option && (
+                 <div className="col-md-3">
+                   <label className="form-label">Tender Amount</label>
+                   <input
+                     type="number"
+                     className="form-control"
+                     name="tender_amt"
+                     value={formData.tender_amt}
+                     onChange={handleChange}
+                   />
+                 </div>
+               )}
+               <div className="col-md-3">
+                 <label className="form-label">Letter Date</label>
+                 <input
+                   type="date"
+                   className="form-control"
+                   name="letter_date"
+                   value={formData.letter_date}
+                   onChange={handleChange}
+                 />
+               </div>
+               <div className="col-md-3">
+                 <label className="form-label">Schedule Date</label>
+                 <input
+                   type="date"
+                   className="form-control"
+                   name="schedule_date"
+                   value={formData.schedule_date}
+                   onChange={handleChange}
+                 />
+               </div>
+               <div className="col-md-3">
+                 <label className="form-label">Category</label>
+                 <select
+                   className="form-select"
+                   name="ref_Category_text"
+                   value={formData.ref_Category_text}
+                   onChange={handleChange}
+                 >
+                   {!cat_text ? (
+                     <option hidden>--select--</option>
+                   ) : (
+                     <option value={category_option}>{category_option}</option>
+                   )}
+                 </select>
+               </div>
+               <div className="col-md-3">
+                 <label className="form-label">Category ID</label>
+                 <select
+                   className="form-select"
+                   name="ref_Category_id"
+                   value={formData.ref_Category_id}
+                   onChange={handleChange}
+                 >
+                   {!cat_text ? (
+                     <option hidden>--select--</option>
+                   ) : (
+                     <option value={cat_id}>{cat_id}</option>
+                   )}
+                 </select>
+               </div>
+             </div>
+             {form_option && (
+               <div className="">
+                 <div className="card-header bg-success text-white">
+                   Publication Details
+                 </div>
+                 <div className="card-body row">
+                   <div className="col-md-3 mb-3">
+                     <label className="form-label">National Newspapers</label>
+                     <input
+                       type="number"
+                       className="form-control"
+                       name="print_in_national_np"
+                       value={formData.print_in_national_np}
+                       onChange={handleChange}
+                     />
+                   </div>
+                   <div className="col-md-3 mb-3">
+                     <label className="form-label">Local Newspapers</label>
+                     <input
+                       type="number"
+                       className="form-control"
+                       name="print_in_local_np"
+                       value={formData.print_in_local_np}
+                       onChange={handleChange}
+                     />
+                   </div>
+                   <div className="col-md-3 mb-3">
+                     <label className="form-label">State Newspapers</label>
+                     <input
+                       type="number"
+                       className="form-control"
+                       name="print_in_state_np"
+                       value={formData.print_in_state_np}
+                       onChange={handleChange}
+                     />
+                   </div>
+                   <div className="col-md-3 mb-3">
+                     <label className="form-label">Other Newspapers</label>
+                     <input
+                       type="number"
+                       className="form-control"
+                       name="print_in_other_np"
+                       value={formData.print_in_other_np}
+                       onChange={handleChange}
+                     />
+                   </div>
+                 </div>
+               </div>
+             )}
+             <div className="p-4">
+               <label className="form-label fw-bold">Remarks</label>
+               <textarea
+                 className="form-control"
+                 name="remarks"
+                 value={formData.remarks}
+                 onChange={handleChange}
+                 rows="4"
+                 placeholder="Enter remarks here..."
+               />
+             </div>
+           </div>
+         </div>
+       </form>
 
         <div className="text-center mt-3">
           <button
