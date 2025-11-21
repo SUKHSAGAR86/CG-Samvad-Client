@@ -664,7 +664,7 @@ const RequestForm = ({ category }) => {
                 </select>
               </div>
 
-              <div className="col-md-3">
+              {/* <div className="col-md-3">
                 <label className="form-label">Category ID</label>
                 <select
                   className="form-select"
@@ -678,7 +678,7 @@ const RequestForm = ({ category }) => {
                     <option value={cat_id}>{cat_id}</option>
                   )}
                 </select>
-              </div>
+              </div> */}
             </div>
 
             {form_option && (

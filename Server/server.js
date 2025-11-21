@@ -1,11 +1,3 @@
-// const express = require('express');
-// const app = express();
-// const port = 3081; // you can set it to 3000 if you want
-
-// app.get('/', (req, res) => res.send('Hello World!'));
-
-// app.listen(port, () => console.log(`Server is running at http://localhost:${port}`));
-
 
 
 
@@ -25,6 +17,7 @@ const createNewRequest=require("./Routes/createNewRequest.route.js");
 const insertClientAdvtRequest = require("./Routes/InsertClientAdvtRequest.route.js")
 const clientNotices=require("./Routes/clientNotices.route.js");
 const newsRateList=require("./Routes/newsRateList.route.js");
+const uploadFile=require("./Routes/uploadFile.route");
 
 
 
@@ -45,6 +38,7 @@ app.use("/api",createNewRequest);
 app.use("/api",insertClientAdvtRequest)
 app.use("/api",clientNotices);
 app.use("/api",newsRateList);
+app.use("/api",uploadFile);
 
 
 

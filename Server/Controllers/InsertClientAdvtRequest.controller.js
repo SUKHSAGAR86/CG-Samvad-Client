@@ -1,17 +1,16 @@
-
 const { pool, sql, poolConnect } = require("../Database/dbConfig");
+const getClientIp=require("../utils/getClientIp")
 
-const getClientIp = (req) => {
-  return (
-    req.headers["x-forwarded-for"]?.split(",")[0] ||   // proxy / hosting
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    (req.connection.socket ? req.connection.socket.remoteAddress : null)
-  );
-};
+// const getClientIp = (req) => {
+//   return (
+//     req.headers["x-forwarded-for"]?.split(",")[0] || // proxy / hosting
+//     req.connection.remoteAddress ||
+//     req.socket.remoteAddress ||
+//     (req.connection.socket ? req.connection.socket.remoteAddress : null)
+//   );
+// };
 
 // --------------------------- INSERT — action = 'post'----------------------------------
-
 
 const insertClientAdvtRequest = async (req, res) => {
   try {
@@ -49,7 +48,11 @@ const insertClientAdvtRequest = async (req, res) => {
     request.input("print_in_local_np", sql.Int, body.print_in_local_np);
     request.input("print_in_state_np", sql.Int, body.print_in_state_np);
     request.input("print_in_other_np", sql.Int, body.print_in_other_np);
-    request.input("print_in_other_remark", sql.NVarChar(200), body.print_in_other_remark);
+    request.input(
+      "print_in_other_remark",
+      sql.NVarChar(200),
+      body.print_in_other_remark
+    );
     request.input("delete_status", sql.Char(1), "N");
     request.input("forward_status", sql.Char(1), body.forward_status);
     request.input("ref_Category_text", sql.VarChar(50), body.ref_Category_text);
@@ -63,17 +66,18 @@ const insertClientAdvtRequest = async (req, res) => {
 
     return res.status(200).json({
       status: result.output.returnval,
-      message: result.output.returnval === 1 ? "Inserted successfully" : "Insert failed",
+      message:
+        result.output.returnval === 1
+          ? "Inserted successfully"
+          : "Insert failed",
       ref_id: result.output.ref_id,
       ip_used: userIp,
     });
-
   } catch (err) {
     console.error("Insert Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
-
 
 // -------------------------GET ALL — action = 'get'------------------------------------
 
@@ -92,13 +96,11 @@ const getAllRequests = async (req, res) => {
     const result = await request.execute("Sp_Insert_Client_Advt_Request");
 
     return res.status(200).json(result.recordset);
-
   } catch (err) {
     console.error("Get All Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
-
 
 // ------------------------------GET BY ID — action = 'get_by_id'-------------------------------
 const getRequestById = async (req, res) => {
@@ -117,16 +119,13 @@ const getRequestById = async (req, res) => {
     const result = await request.execute("Sp_Insert_Client_Advt_Request");
 
     return res.status(200).json(result.recordset[0] || {});
-
   } catch (err) {
     console.error("Get By ID Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-
 // ------------------------UPDATE — action = 'update'-------------------------------------
-
 
 const updateClientAdvtRequest = async (req, res) => {
   try {
@@ -152,7 +151,11 @@ const updateClientAdvtRequest = async (req, res) => {
     request.input("print_in_local_np", sql.Int, body.print_in_local_np);
     request.input("print_in_state_np", sql.Int, body.print_in_state_np);
     request.input("print_in_other_np", sql.Int, body.print_in_other_np);
-    request.input("print_in_other_remark", sql.NVarChar(200), body.print_in_other_remark);
+    request.input(
+      "print_in_other_remark",
+      sql.NVarChar(200),
+      body.print_in_other_remark
+    );
 
     // Add missing user_id
     request.input("user_id", sql.VarChar(6), body.user_id);
@@ -168,7 +171,9 @@ const updateClientAdvtRequest = async (req, res) => {
     return res.status(200).json({
       status: result.output.returnval,
       message:
-        result.output.returnval === 1 ? "Updated successfully" : "Update failed",
+        result.output.returnval === 1
+          ? "Updated successfully"
+          : "Update failed",
       ip_used: userIp,
     });
   } catch (err) {
@@ -176,8 +181,6 @@ const updateClientAdvtRequest = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-
-
 
 // --------------DELETE — action = 'delete'-----------------------------------------------
 
@@ -215,13 +218,11 @@ const deleteClientAdvtRequest = async (req, res) => {
           ? `Deleted successfully (Ref ID: ${ref_id})`
           : "Delete failed",
     });
-
   } catch (err) {
     console.error("Delete Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
-
 
 module.exports = {
   insertClientAdvtRequest,
