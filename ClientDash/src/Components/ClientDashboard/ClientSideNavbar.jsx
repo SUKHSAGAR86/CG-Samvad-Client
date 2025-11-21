@@ -186,7 +186,7 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         </NavLink>
 
         <NavLink
-          to="/Forward-Request"
+          to="/forwardto"
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >

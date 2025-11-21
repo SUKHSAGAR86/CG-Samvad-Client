@@ -109,7 +109,7 @@ const getRequestById = async (req, res) => {
     const { user_id, financial_year } = req.query;
 
     const request = pool.request();
-    request.input("ref_id", sql.VarChar(12), ref_id);
+    request.output("ref_id", sql.VarChar(12), ref_id);
     request.input("user_id", sql.VarChar(5), user_id);
     request.input("financial_year", sql.VarChar(9), financial_year);
     request.input("action", sql.VarChar(10), "get_by_id");
@@ -153,6 +153,9 @@ const updateClientAdvtRequest = async (req, res) => {
     request.input("print_in_other_np", sql.Int, body.print_in_other_np);
     request.input("print_in_other_remark", sql.NVarChar(200), body.print_in_other_remark);
 
+    // Add missing user_id
+    request.input("user_id", sql.VarChar(6), body.user_id);
+
     // AUTO IP
     request.input("ip_address", sql.VarChar(20), userIp);
 
@@ -163,15 +166,16 @@ const updateClientAdvtRequest = async (req, res) => {
 
     return res.status(200).json({
       status: result.output.returnval,
-      message: result.output.returnval === 1 ? "Updated successfully" : "Update failed",
+      message:
+        result.output.returnval === 1 ? "Updated successfully" : "Update failed",
       ip_used: userIp,
     });
-
   } catch (err) {
     console.error("Update Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 
 // --------------DELETE — action = 'delete'-----------------------------------------------

@@ -12,8 +12,8 @@ const {
 const router = express.Router();
 router.post("/client-advt-request", insertClientAdvtRequest);
 router.get("/get-client-advt-request", getAllRequests);
-router.get("/client-advt-request/:ref_id", getRequestById);
-router.put("/client-advt-request", updateClientAdvtRequest);
+router.get("/get-client-advt-request/:ref_id", getRequestById);
+router.put("/client-advt-request/:ref_id", updateClientAdvtRequest);
 router.delete("/client-advt-request/:ref_id", deleteClientAdvtRequest);
 
 module.exports = router;

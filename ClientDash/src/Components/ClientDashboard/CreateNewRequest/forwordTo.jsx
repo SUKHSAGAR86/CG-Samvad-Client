@@ -36,30 +36,30 @@ const ForwardTo = () => {
   }, []);
 
   // ============Edit Handler====================
-   const handleEdit = async (ref_id) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3080/api/client-advt-request",
-        {
-          action: "get_by_id",
-          ref_id,
+const handleEdit = async (ref_id) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:3080/api/get-client-advt-request/${ref_id}`,
+      {
+        params: {
           financial_year,
           user_id,
-        }
-      );
-
-      const rowData = response.data.data[0];
-
-      navigate(`/${ref_id}`, {
-        state: {
-          action: "update",
-          rowData,
         },
-      });
-    } catch (error) {
-      console.error("Edit Error:", error);
-    }
-  };
+      }
+    );
+
+    const rowData = response.data;
+
+    navigate("/", {
+      state: {
+        action: "update",
+        rowData,
+      },
+    });
+  } catch (error) {
+    console.error("Edit Error:", error);
+  }
+};
 
   // =================DELETE HANDLER ===============
 const handleDelete = async (ref_id) => {
@@ -129,7 +129,9 @@ const handleDelete = async (ref_id) => {
                 <td>
                   <span
                     className="btn btn-warning btn-sm action-btn me-2"
-                    onClick={() => handleEdit(row.ref_id)}
+                    onClick={() =>{ 
+                      console.log("",row.ref_id)
+                      handleEdit(row.ref_id)}}
                   >
                     Edit
                   </span>
