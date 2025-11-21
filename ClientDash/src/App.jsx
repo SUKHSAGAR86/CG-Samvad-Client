@@ -7,6 +7,7 @@ import CreateNewRequest from "./Components/ClientDashboard/CreateNewRequest/Crea
 import RequestForm from "./Components/ClientDashboard/CreateNewRequest/requestForm";
 
 import ForwardTo from "./Components/ClientDashboard/CreateNewRequest/forwordTo";
+import NewsRatesList from "./Components/ClientDashboard/NewsRateList";
 
 
 const App = () => {
@@ -18,7 +19,7 @@ const App = () => {
         <Route path="/notice" element={<ClientNoticeBoard />} />
         <Route path="/newrequest" element={<CreateNewRequest />} />
         <Route path="/forwardto" element={<ForwardTo/>}/>
-        {/* <Route path="/newsratelist" element={<NewsRatesList />} /> */}
+        <Route  path="/newsratelist"element={<NewsRatesList/>}/>
 
         
       </Routes>
