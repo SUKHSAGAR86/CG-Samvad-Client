@@ -18,9 +18,11 @@ const upload = multer(); // memory storage for file buffer
 
 
 router.get("/files/:ref_id/:financial_year", getFiles);
-router.post("/files", upload.single("file"), uploadFile);
+router.post("/post-files", upload.single("file"), uploadFile);
 router.put("/files", upload.single("file"), updateFile);
 router.delete("/files/:ref_id/:financial_year/:sno", deleteFile);
 
  module.exports = router;
+
+
 

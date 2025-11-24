@@ -144,15 +144,42 @@ const { pool, sql, poolConnect } = require("../Database/dbConfig");
 const getClientIp = require("../utils/getClientIp");
 
 // ===================== GET FILES =====================
+// const getFiles = async (req, res) => {
+//   try {
+//     await poolConnect;
+
+//     const { ref_id, financial_year } = req.params;
+
+//     const request = pool.request();
+//     request.input("ref_id", sql.VarChar(12), ref_id);
+//     request.input("financial_year", sql.VarChar(9), financial_year);
+//     request.input("action", sql.VarChar(10), "get");
+//     request.output("returnval", sql.Int);
+
+//     const result = await request.execute("Client_FileUpload_CRUD");
+
+//     return res.status(200).json({
+//       status: result.output.returnval,
+//       data: result.recordset,
+//     });
+
+//   } catch (err) {
+//     console.error("getFiles Error:", err);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
+
+// ===================== GET FILES =====================
 const getFiles = async (req, res) => {
   try {
     await poolConnect;
 
-    const { ref_id, financial_year } = req.params;
+    const { ref_id, financial_year, categary_cd } = req.params;
 
     const request = pool.request();
     request.input("ref_id", sql.VarChar(12), ref_id);
     request.input("financial_year", sql.VarChar(9), financial_year);
+    request.input("categary_cd", sql.VarChar(2), categary_cd);  // << added
     request.input("action", sql.VarChar(10), "get");
     request.output("returnval", sql.Int);
 
@@ -183,7 +210,7 @@ const uploadFile = async (req, res) => {
     request.input("ref_id", sql.VarChar(12), body.ref_id);
     request.input("financial_year", sql.VarChar(9), body.financial_year);
     request.input("categary_cd", sql.VarChar(2), body.categary_cd);
-    request.input("sno", sql.Int, parseInt(body.sno, 10));
+request.input("sno", sql.Int, body.sno ? parseInt(body.sno, 10) : 0);
     request.input("link_name", sql.NVarChar(250), body.link_name);
     request.input("advt_file_path", sql.NVarChar(sql.MAX), null);
     request.input("file_data", sql.VarBinary(sql.MAX), file.buffer);
