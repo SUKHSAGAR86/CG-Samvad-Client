@@ -1,266 +1,211 @@
-
-
-
-// import React, {useEffect, useState } from "react";
-// import axios from "axios";
-// import "bootstrap/dist/css/bootstrap.min.css";
-
-// const ClientFileUpload = ({ref_id}) => {
-//   const [file, setFile] = useState(null);
-//   const [matterFile, setMatterFile] = useState(null);
-
-//   const [alertMsg, setAlertMsg] = useState("");
-//   const [showMatterInput, setShowMatterInput] = useState(false);
-
-//   const BASE_URL = "http://localhost:3080/api";
-
-// useEffect(() => {
-//     if (!localStorage.getItem("financial_year")) {
-//       localStorage.setItem("financial_year", "2025-2026");
-//     }
-//     if (!localStorage.getItem("user_id")) {
-//       localStorage.setItem("user_id", "00002");
-//     }
-
-
-   
-//   }, []);
-
-//   const financial_year = localStorage.getItem("financial_year");
-//   const user_id = localStorage.getItem("user_id");
-
-
-
-//   // ================= UPLOAD Letter =======================
-//   const handleUpload = async () => {
-//     if (!file) {
-//       setAlertMsg("⚠ Please choose a file to upload!");
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     formData.append("file", file);
-//     formData.append("ref_id", ref_id);
-//     formData.append("financial_year", financial_year);
-//     formData.append("user_id", user_id);
-
-//     try {
-//       await axios.post(`${BASE_URL}/files`, formData);
-//       setAlertMsg("✔ Letter uploaded successfully!");
-//       setShowMatterInput(true);
-//       setFile(null);
-//     } catch (err) {
-//       console.log("Upload Error:", err);
-//     }
-//   };
-
-//   // ================= UPLOAD Matter =======================
-//   const handleMatterUpload = async () => {
-//     if (!matterFile) {
-//       setAlertMsg("⚠ Please choose matter file to upload!");
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     formData.append("file", matterFile);
-//     formData.append("ref_id", ref_id);
-//     formData.append("financial_year", financial_year);
-//     formData.append("user_id", user_id);
-
-//     try {
-//       await axios.post(`${BASE_URL}/files`, formData);
-//       setAlertMsg("✔ Matter uploaded successfully!");
-//       setMatterFile(null);
-//     } catch (err) {
-//       console.log("Upload Error:", err);
-//     }
-//   };
-
-//   return (
-//     <div className="container mt-4">
-//       <h4 className="text-center fw-bold mb-4 text-primary">
-//         📄 Client File Upload Manager
-//       </h4>
-
-//       {/* Upload Letter */}
-//       <div className="card shadow-lg rounded-4 mb-4 p-4">
-//         <label className="form-label fw-semibold">Upload Letter</label>
-//         <div className="d-flex justify-content-between">
-//           <input
-//             type="file"
-//             className="form-control"
-//             onChange={(e) => setFile(e.target.files[0])}
-//           />
-//           <button className="btn btn-success ms-3" onClick={handleUpload}>
-//             Upload Letter
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Upload Matter */}
-//       {showMatterInput && (
-//         <div className="card shadow-lg rounded-4 mb-4 p-4">
-//           <label className="form-label fw-semibold">Upload Matter</label>
-//           <div className="d-flex justify-content-between">
-//             <input
-//               type="file"
-//               className="form-control"
-//               onChange={(e) => setMatterFile(e.target.files[0])}
-//             />
-//             <button className="btn btn-primary ms-3" onClick={handleMatterUpload}>
-//               Upload Matter
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* ALERT */}
-//       {alertMsg && (
-//         <div className="alert alert-info text-center fw-bold">{alertMsg}</div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default ClientFileUpload;
-
-
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaTrash, FaDownload } from "react-icons/fa";
 
-const ClientFileUpload = ({ref_id }) => {
+const ClientFileUpload = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const { ref_id, financial_year, user_id, subject } = location.state || {};
+
   const [file, setFile] = useState(null);
-  const [matterFile, setMatterFile] = useState(null);
-  const [alertMsg, setAlertMsg] = useState("");
-  const [showMatterInput, setShowMatterInput] = useState(false);
+  const [linkName, setLinkName] = useState("");
+  const [fileList, setFileList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  const BASE_URL = "http://localhost:3080/api";
+  // ================= Fetch Uploaded Files =================
+  const fetchFiles = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3080/api/files/?ref_id=${ref_id}&financial_year=${financial_year}`
+      );
+      setFileList(res.data);
+    } catch (err) {
+      console.log("Fetch error:", err);
+    }
+  };
 
-  // Set session default values
   useEffect(() => {
-    if (!localStorage.getItem("financial_year")) {
-      localStorage.setItem("financial_year", "2025-2026");
-    }
-    if (!localStorage.getItem("user_id")) {
-      localStorage.setItem("user_id", "00002");
-    }
+    fetchFiles();
   }, []);
 
-  const financial_year = localStorage.getItem("financial_year");
-  const user_id = localStorage.getItem("user_id");
+  // ================= Handle Upload =================
+  const handleUpload = async (e) => {
+    e.preventDefault();
 
-  // ================= UPLOAD Letter =======================
-  const handleUpload = async () => {
-    if (!file) {
-      setAlertMsg("⚠ Please choose a Letter file to upload!");
+    if (!file || !linkName) {
+      alert("Please enter Link Name and select a file");
       return;
     }
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("ref_id",ref_id);
-    formData.append("financial_year", financial_year);
-    formData.append("user_id", user_id);
-
-    // Required fields for Stored Procedure
-    formData.append("categary_cd", "01");               // Letter Category
-    formData.append("sno", +1);                          // SP auto-assigns next number
-    formData.append("link_name", file.name);            // Display name
-    formData.append("action", "post");                  // Insert action
-
-    try {
-      await axios.post(`${BASE_URL}/upload-files`, formData);
-      setAlertMsg("✔ Letter uploaded successfully!");
-      setShowMatterInput(true);
-      setFile(null);
-    } catch (err) {
-      // console.log("Upload Error:", err);
-      // setAlertMsg("❌ Upload failed. Check console for details.");
-
-      console.log("Upload Error Full:", JSON.stringify(err, null, 2));
-  console.log("Server Response:", err.response?.data);
-  console.log("Status:", err.response?.status);
-  console.log("Details:", err.response?.data?.message);
-  setAlertMsg("❌ Upload failed. Check console for details.");
-    }
-  };
-
-  // ================= UPLOAD Matter =======================
-  const handleMatterUpload = async () => {
-    if (!matterFile) {
-      setAlertMsg("⚠ Please choose a Matter file to upload!");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", matterFile);
     formData.append("ref_id", ref_id);
     formData.append("financial_year", financial_year);
     formData.append("user_id", user_id);
+    formData.append("link_name", linkName);
 
-    // Required fields for Stored Procedure
-    formData.append("categary_cd", "02");                // Matter Category
-    formData.append("sno", 0);
-    formData.append("link_name", matterFile.name);
-    formData.append("action", "post");
+    setLoading(true);
 
     try {
-      await axios.post(`${BASE_URL}/files`, formData);
-      setAlertMsg("✔ Matter uploaded successfully!");
-      setMatterFile(null);
+      await axios.post("http://localhost:3080/api/post-files", formData);
+      setShowModal(true);
+      setFile(null);
+      setLinkName("");
+      fetchFiles();
     } catch (err) {
-      console.log("Upload Error:", err);
-      setAlertMsg("❌ Upload failed. Check console for details.");
+      alert(err.response?.data?.message || "Upload failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ================= Delete File =================
+  const deleteFile = async (sno) => {
+    if (!window.confirm("Are you sure you want to delete this file?")) return;
+
+    try {
+      await axios.delete(
+        `http://localhost:3080/api/files/${ref_id}/${financial_year}/${sno}`
+      );
+      fetchFiles();
+    } catch (err) {
+      console.log("Delete error:", err);
     }
   };
 
   return (
-    <div className="container mt-4">
-      <h4 className="text-center fw-bold mb-4 text-primary">
-        📄 Client File Upload Manager
-      </h4>
-
-      {/* Upload Letter */}
-      <div className="card shadow-lg rounded-4 mb-4 p-4">
-        <label className="form-label fw-semibold">Upload Letter</label>
-        <div className="d-flex justify-content-between gap-3">
-          <input
-            type="file"
-            className="form-control"
-            onChange={(e) => setFile(e.target.files[0])}
-          />
-          <button className="btn btn-success" onClick={handleUpload}>
-            Upload Letter
-          </button>
-        </div>
-      </div>
-
-      {/* Upload Matter */}
-      {showMatterInput && (
-        <div className="card shadow-lg rounded-4 mb-4 p-4">
-          <label className="form-label fw-semibold">Upload Matter</label>
-          <div className="d-flex justify-content-between gap-3">
-            <input
-              type="file"
-              className="form-control"
-              onChange={(e) => setMatterFile(e.target.files[0])}
-            />
-            <button className="btn btn-primary" onClick={handleMatterUpload}>
-              Upload Matter
-            </button>
+    <div className="container py-4">
+      {/* Modal */}
+      {showModal && (
+        <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,0.6)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">Success</h5>
+              </div>
+              <div className="modal-body text-center">
+                <h5>File Uploaded Successfully!</h5>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-success px-4" onClick={() => setShowModal(false)}>
+                  OK
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ALERT MESSAGE */}
-      {alertMsg && (
-        <div className="alert alert-info text-center fw-bold">
-          {alertMsg}
+      {/* Header Info */}
+      <div className="card mb-3 shadow-sm">
+        <div className="card-header bg-primary text-white fw-bold">
+          Upload Client Files
         </div>
-      )}
+        <div className="p-3">
+          <p><b>Ref ID:</b> {ref_id}</p>
+          <p><b>Subject:</b> {subject}</p>
+          <p><b>Financial Year:</b> {financial_year}</p>
+          <p><b>User ID:</b> {user_id}</p>
+        </div>
+      </div>
+
+      {/* Upload Form */}
+      <form onSubmit={handleUpload} className="card p-4 shadow-sm">
+        <div className="row g-3">
+          <div className="col-md-4">
+            <label className="form-label fw-bold">Link Name *</label>
+            <input
+              type="text"
+              className="form-control"
+              value={linkName}
+              onChange={(e) => setLinkName(e.target.value)}
+              placeholder="Enter file title"
+              required
+            />
+          </div>
+
+          <div className="col-md-4">
+            <label className="form-label fw-bold">Choose File *</label>
+            <input
+              type="file"
+              className="form-control"
+              onChange={(e) => setFile(e.target.files[0])}
+              required
+            />
+          </div>
+
+          <div className="col-md-4 d-flex align-items-end">
+            <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+              {loading ? "Uploading..." : "Upload File"}
+            </button>
+          </div>
+        </div>
+      </form>
+
+      {/* File List Table */}
+      <div className="card mt-4 shadow-sm">
+        <div className="card-header bg-success text-white fw-bold">
+          Uploaded Files
+        </div>
+        <div className="card-body p-0">
+          <table className="table table-bordered table-striped mb-0">
+            <thead className="table-light">
+              <tr>
+                <th>#</th>
+                <th>Link Name</th>
+                <th>File Name</th>
+                <th className="text-center">Download</th>
+                <th className="text-center">Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fileList.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center py-3 text-danger">
+                    No files uploaded yet
+                  </td>
+                </tr>
+              ) : (
+                fileList.map((file, index) => (
+                  <tr key={file.sno}>
+                    <td>{index + 1}</td>
+                    <td>{file.link_name}</td>
+                    <td>{file.file_name}</td>
+                    <td className="text-center">
+                      <a
+                        href={`http://localhost:3080/uploads/${file.file_name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-sm btn-outline-primary"
+                      >
+                        <FaDownload />
+                      </a>
+                    </td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-sm btn-danger"
+                        onClick={() => deleteFile(file.sno)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="text-center mt-4">
+        <button className="btn btn-secondary px-4" onClick={() => navigate(-1)}>
+          Back
+        </button>
+      </div>
     </div>
   );
 };
