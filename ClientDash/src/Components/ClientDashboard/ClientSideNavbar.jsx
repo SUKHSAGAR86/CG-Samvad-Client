@@ -92,11 +92,9 @@
 //             to="/notices"
 //             className="nav-link text-white sidebar-dropdown "    style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
 
-          
 //           >
 //             {!isCollapsed && "Notice Board"}
 //           </NavLink>
-
 
 //           {/* Master Entry Dropdown Header */}
 //           <div
@@ -112,7 +110,6 @@
 //               (isDropdownOpen ? <BsChevronUp /> : <BsChevronDown />)}
 //           </div>
 
-     
 //           <Collapse in={isDropdownOpen}>
 //             <div
 //               className="ms-3 sidebar-dropdown"
@@ -130,7 +127,6 @@
 //               <NavLink to="/Update Profile" className="nav-link text-white">
 //                 {!isCollapsed && "Update Profile"}
 //               </NavLink>
-              
 
 //               <NavLink to="/verify-mobile "className="nav-link text-white">
 //                 {!isCollapsed && "Verify Mobile Number"}
@@ -139,8 +135,6 @@
 //                 {!isCollapsed && "Change Password"}
 //               </NavLink>
 
-              
-              
 //             </div>
 //           </Collapse>
 
@@ -148,21 +142,16 @@
 // >
 //                 {!isCollapsed && "Help Desk"}
 //               </NavLink>
-              
 
 //         </nav>
 
-       
 //       </div>
 
-    
 //     </div>
 //   );
 // };
 
 // export default ClientSideNavbar;
-
-
 
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -178,11 +167,41 @@ const ClientSideNavbar = ({ isCollapsed }) => {
       <nav className="nav flex-column p-2">
         {/* Main navigation links */}
         <NavLink
-          to="/Forward-Request"
+          to="/newrequest"
+          className="nav-link text-white sidebar-dropdown"
+          style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
+        >
+          {!isCollapsed && "Dashboard"}
+        </NavLink>
+        <NavLink
+          to="/notice"
+          className="nav-link text-white sidebar-dropdown"
+          style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
+        >
+          {!isCollapsed && "Notice Board"}
+        </NavLink>
+
+        <NavLink
+          to="/newrequest"
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
           {!isCollapsed && "Create New Request / Upload Your Work Order"}
+        </NavLink>
+        <NavLink
+          to="/newrequest"
+          className="nav-link text-white sidebar-dropdown"
+          style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
+        >
+          {!isCollapsed && "Inbox"}
+        </NavLink>
+
+        <NavLink
+          to="/newrequest"
+          className="nav-link text-white sidebar-dropdown"
+          style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
+        >
+          {!isCollapsed && "Submited Requests"}
         </NavLink>
 
         <NavLink
@@ -190,7 +209,7 @@ const ClientSideNavbar = ({ isCollapsed }) => {
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
-          {!isCollapsed && "Forward Request To Samvad"}
+          {!isCollapsed && "Draft Request "}
         </NavLink>
 
         <NavLink
@@ -232,14 +251,6 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         >
           {!isCollapsed &&
             "Generated Bill List / Outstanding / Payment Details"}
-        </NavLink>
-
-        <NavLink
-          to="/notice"
-          className="nav-link text-white sidebar-dropdown"
-          style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
-        >
-          {!isCollapsed && "Notice Board"}
         </NavLink>
 
         {/* Profile Dropdown Section */}
