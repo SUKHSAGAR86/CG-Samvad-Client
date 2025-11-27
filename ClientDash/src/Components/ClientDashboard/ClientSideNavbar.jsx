@@ -160,7 +160,7 @@ import { Collapse } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ClientSideNavbar = ({ isCollapsed }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
     <div>
@@ -241,6 +241,21 @@ const ClientSideNavbar = ({ isCollapsed }) => {
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
+          {!isCollapsed && "Report"}
+        </NavLink>
+
+        <NavLink
+          to="/newsratelist"
+          className="nav-link text-white sidebar-dropdown"
+          style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
+        >
+          {!isCollapsed && "Check Status"}
+        </NavLink>
+        <NavLink
+          to="/newsratelist"
+          className="nav-link text-white sidebar-dropdown"
+          style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
+        >
           {!isCollapsed && "News Paper Rate List"}
         </NavLink>
 
@@ -254,7 +269,7 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         </NavLink>
 
         {/* Profile Dropdown Section */}
-        <div
+        {/* <div
           className="nav-link text-white d-flex justify-content-between align-items-center"
           style={{
             cursor: "pointer",
@@ -300,7 +315,7 @@ const ClientSideNavbar = ({ isCollapsed }) => {
               {!isCollapsed && "Change Password"}
             </NavLink>
           </div>
-        </Collapse>
+        </Collapse> */}
 
         <NavLink
           to="/help"
