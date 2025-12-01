@@ -9,6 +9,12 @@ const ForwardTo = () => {
   const user_id = localStorage.getItem("user_id");
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1);
+const recordsPerPage = 10;
+
+
+
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     return new Date(dateString).toISOString().split("T")[0];
@@ -90,6 +96,39 @@ const handleDelete = async (ref_id) => {
   }
 };
 
+//===================pagination-========================
+const indexOfLastRecord = currentPage * recordsPerPage;
+const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+const currentRecords = data.slice(indexOfFirstRecord, indexOfLastRecord);
+
+const totalPages = Math.ceil(data.length / recordsPerPage);
+
+// Generate Page Numbers
+const getPageNumbers = () => {
+  let pages = [];
+
+  if (totalPages <= 7) {
+    // Show all pages if total <= 7
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    // Always show: 1 ... middle ... last
+    pages.push(1);
+
+    if (currentPage > 3) pages.push("...");
+
+    let start = Math.max(2, currentPage - 1);
+    let end = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let i = start; i <= end; i++) pages.push(i);
+
+    if (currentPage < totalPages - 2) pages.push("...");
+
+    pages.push(totalPages);
+  }
+
+  return pages;
+};
+
   return (
     <div className="container p-4">
       <h4 className="text-danger text-center mb-3">
@@ -115,7 +154,7 @@ const handleDelete = async (ref_id) => {
           </thead>
 
           <tbody>
-            {data.map((row) => (
+           {currentRecords.map((row) => (
               <tr key={row.ref_id}>
                 <td>{row.ref_id}</td>
                 <td>{row.subject}</td>
@@ -153,6 +192,44 @@ const handleDelete = async (ref_id) => {
 
         </table>
       </div>
+            {/* ---------------- Pagination ---------------- */}
+<div className="d-flex justify-content-center mt-3">
+  <ul className="pagination">
+
+    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+      <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+        Prev
+      </button>
+    </li>
+
+    {getPageNumbers().map((page, index) =>
+      page === "..." ? (
+        <li key={index} className="page-item disabled">
+          <span className="page-link">...</span>
+        </li>
+      ) : (
+        <li
+          key={index}
+          className={`page-item ${currentPage === page ? "active" : ""}`}
+        >
+          <button className="page-link" onClick={() => setCurrentPage(page)}>
+            {page}
+          </button>
+        </li>
+      )
+    )}
+
+    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+      <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+        Next
+      </button>
+    </li>
+
+  </ul>
+</div>
+
+
+
     </div>
   );
 };
