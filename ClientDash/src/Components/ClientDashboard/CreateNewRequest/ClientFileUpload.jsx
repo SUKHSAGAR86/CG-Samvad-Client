@@ -10,29 +10,27 @@ import {
   FaFileAlt,
   FaCheckCircle,
   FaFolder,
-  FaEdit,FaPencilAlt,
+  FaPencilAlt,
 } from "react-icons/fa";
 
 const ClientFileUpload = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const { ref_id, financial_year, categary, user_id, subject } = state || {};
+  const { ref_id, financial_year, user_id } = state || {}; // Removed 'categary', 'subject' as they aren't used for initial state
 
   const fileInputRef = useRef(null);
-  const matterFileInputRef = useRef(null);
 
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(categary || "");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [fileList, setFileList] = useState([]);
 
   const [file, setFile] = useState(null);
   const [linkName, setLinkName] = useState("");
 
+  const [letterCategoryCode, setLetterCategoryCode] = useState(""); // ⬅️ NEW STATE for Letter code
   const [matterCategoryCode, setMatterCategoryCode] = useState("");
-  const [letterUploaded, setLetterUploaded] = useState(false);
-  const [matterFile, setMatterFile] = useState(null);
-  const [matterLinkName, setMatterLinkName] = useState("");
+  const [letterUploaded, setLetterUploaded] = useState(0); // Initialize with 0
 
   const [showModal, setShowModal] = useState(false);
   const [previewURL, setPreviewURL] = useState(null);
@@ -55,24 +53,37 @@ const ClientFileUpload = () => {
       const data = res.data.data || [];
       setCategories(data);
 
-      if (!selectedCategory && data.length > 0) {
-        setSelectedCategory(data[0].cat_cd);
-      }
+      const letter = data.find((c) =>
+        c.cat_name.toLowerCase().includes("letter")
+      );
+      if (letter) {
+        setLetterCategoryCode(letter.cat_cd); // ⬅️ Save Letter code
 
+        // Check if letter has been uploaded
+        const check = await axios.get(
+          `http://localhost:3080/api/files/${ref_id}/${financial_year}/${letter.cat_cd}`
+        );
+        const uploadedCount = check?.data.data.length || 0;
+        setLetterUploaded(uploadedCount);
+
+        // Set initial selected category after checking upload status
+        if (uploadedCount > 0 && data.length > 0) {
+          // If letter is uploaded, select the first *other* category (or the first one if all are "matter")
+          const firstOtherCategory = data.find(c => c.cat_cd !== letter.cat_cd);
+          setSelectedCategory(firstOtherCategory ? firstOtherCategory.cat_cd : data[0].cat_cd);
+        } else if (uploadedCount === 0) {
+           // If letter is not uploaded, set the selection to letter code
+           setSelectedCategory(letter.cat_cd);
+        }
+
+      }
+      
       const matter = data.find((c) =>
         c.cat_name.toLowerCase().includes("matter")
       );
       if (matter) setMatterCategoryCode(matter.cat_cd);
 
-      const letter = data.find((c) =>
-        c.cat_name.toLowerCase().includes("letter")
-      );
-      if (letter) {
-        const check = await axios.get(
-          `http://localhost:3080/api/files/${ref_id}/${financial_year}/${letter.cat_cd}`
-        );
-        setLetterUploaded(check.data.data.length > 0);
-      }
+
     } catch (err) {
       console.error("Fetch categories error:", err);
     }
@@ -84,6 +95,7 @@ const ClientFileUpload = () => {
 
   // ---------------- FETCH FILES ----------------
   const fetchFiles = async () => {
+    // Only fetch files for the selected category
     if (!selectedCategory) return;
 
     try {
@@ -97,72 +109,67 @@ const ClientFileUpload = () => {
   };
 
   useEffect(() => {
+    // Re-fetch files whenever selectedCategory changes
     fetchFiles();
-  }, [selectedCategory]);
+  }, [selectedCategory, letterUploaded]); // Added letterUploaded dependency
 
-  // ---------------- UPLOAD LETTER FILE ----------------
+  // ---------------- UPLOAD FILE (Combined) ----------------
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file || !linkName || !selectedCategory) return;
+    if (!file || !linkName) return;
+
+    // ⬅️ CRUCIAL LOGIC MODIFICATION
+    let categoryToUse;
+
+    // 1. If 'letter' is NOT uploaded, we MUST upload to the letter category.
+    if (letterUploaded === 0) {
+      categoryToUse = letterCategoryCode;
+    } else {
+      // 2. If 'letter' IS uploaded, we use the selected category from the dropdown.
+      categoryToUse = selectedCategory;
+    }
+    
+    if (!categoryToUse) {
+        console.error("Category code not determined. Cannot upload.");
+        return;
+    }
+
 
     const formData = new FormData();
     formData.append("file", file);
     formData.append("ref_id", ref_id);
     formData.append("financial_year", financial_year);
-    formData.append("categary_cd", selectedCategory);
+    formData.append("categary_cd", categoryToUse); // ⬅️ DYNAMIC CATEGORY
     formData.append("user_id", user_id);
     formData.append("link_name", linkName);
 
     try {
       await axios.post("http://localhost:3080/api/post-files", formData);
 
+      // Reset state for the next upload
       setFile(null);
       setLinkName("");
       setPreviewURL(null);
       setPreviewType("");
+      setFileSize(null);
 
       if (fileInputRef.current) fileInputRef.current.value = "";
 
       setShowModal(true);
-      fetchFiles();
-      fetchCategories();
-    } catch (err) {
-      console.error("Upload failed:", err);
-    }
-  };
+      
+      // Re-fetch categories to update letterUploaded status
+      await fetchCategories(); 
 
-  // ---------------- UPLOAD MATTER FILE ----------------
-  const handleMatterUpload = async (e) => {
-    e.preventDefault();
-    if (!matterFile || !matterLinkName || !matterCategoryCode) return;
-
-    const formData = new FormData();
-    formData.append("file", matterFile);
-    formData.append("ref_id", ref_id);
-    formData.append("financial_year", financial_year);
-    formData.append("categary_cd", matterCategoryCode);
-    formData.append("user_id", user_id);
-    formData.append("link_name", matterLinkName);
-
-    try {
-      await axios.post("http://localhost:3080/api/post-files", formData);
-
-      setMatterFile(null);
-      setMatterLinkName("");
-      setPreviewURL(null);
-      setPreviewType("");
-
-      if (matterFileInputRef.current)
-        matterFileInputRef.current.value = "";
-
-      setShowModal(true);
-      fetchFiles();
-      fetchCategories();
+      // Re-fetch files for the currently selected category
+      fetchFiles(); 
+      
       window.scrollTo({ top: 0, behavior: "smooth" });
+
     } catch (err) {
       console.error("Upload failed:", err);
     }
   };
+
 
   // ---------------- DELETE FILE ----------------
   const deleteFile = async (sno) => {
@@ -172,6 +179,8 @@ const ClientFileUpload = () => {
       await axios.delete(
         `http://localhost:3080/api/files/${ref_id}/${financial_year}/${sno}`
       );
+      // Re-fetch categories to check if letter count changes
+      await fetchCategories();
       fetchFiles();
     } catch (err) {
       console.error("Delete failed:", err);
@@ -196,59 +205,68 @@ const ClientFileUpload = () => {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const selected = e.dataTransfer.files[0];
-
-      if (letterUploaded) setMatterFile(selected);
-      else setFile(selected);
-
+      setFile(selected);
+      
       if (selected) {
         setPreviewURL(URL.createObjectURL(selected));
         setPreviewType(selected.type);
       }
+      // Auto-generate next file name
+      setLinkName(generateNextFileName(letterUploaded === 0 ? letterCategoryCode : selectedCategory)); 
+      setFileSize((selected.size / (1024 * 1024)).toFixed(2));
     }
   };
 
 
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
 
+    if (!selected) return;
 
-
-const handleFileChange = (e) => {
-  const selected = e.target.files[0];
-
-  if (!selected) return;
-
-  // Save file or matter file
-  if (letterUploaded) {
-    setMatterFile(selected);
-  } else {
+    // Save file 
     setFile(selected);
-  }
 
-  // Preview
-  setPreviewURL(URL.createObjectURL(selected));
-  setPreviewType(selected.type);
+    // Preview
+    setPreviewURL(URL.createObjectURL(selected));
+    setPreviewType(selected.type);
 
-  // File size in MB
-  setFileSize((selected.size / (1024 * 1024)).toFixed(2));
+    // File size in MB
+    setFileSize((selected.size / (1024 * 1024)).toFixed(2));
 
-  // Auto-generate next file name
-  const auto = generateNextFileName();
-  if (letterUploaded) {
-    setMatterLinkName(auto);
-  } else {
-    setLinkName(auto);
-  }
-};
+    // Auto-generate next file name based on current context
+    setLinkName(generateNextFileName(letterUploaded === 0 ? letterCategoryCode : selectedCategory));
 
-
-
-
+  };
 
 
   // ---------------- Auto File Name ----------------
-  const generateNextFileName = () => {
-    const count = fileList.length + 1;
-    return `${ref_id}_${count}`;
+  const generateNextFileName = (cat_cd) => {
+    // Filter fileList by the category code that the *new* file will be uploaded to
+    const filesInCurrentCat = fileList.filter(f => f.categary_cd === cat_cd);
+    const count = filesInCurrentCat.length + 1;
+
+    // Use a category name prefix for better naming (optional, but good practice)
+    const categoryName = categories.find(c => c.cat_cd === cat_cd)?.cat_name || 'DOC';
+
+    return `${ref_id}_${categoryName.toUpperCase()}_${count}`;
   };
+
+  // ---------------- UI Handlers ----------------
+  const handleCategoryChange = (e) => {
+      setSelectedCategory(e.target.value);
+      setFile(null); // Clear file and link name when category changes
+      setLinkName("");
+      setPreviewURL(null);
+      setPreviewType("");
+      setFileSize(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  // Determine the current file/link state to display in the input fields
+  const currentFile = file;
+  const currentLinkName = linkName;
+  const currentFileInputRef = fileInputRef;
+
 
   return (
     <div
@@ -259,7 +277,6 @@ const handleFileChange = (e) => {
       }}
     >
       <div className="container">
-
         {/* ================= SUCCESS MODAL ================= */}
         {showModal && (
           <div
@@ -315,7 +332,7 @@ const handleFileChange = (e) => {
               </div>
               <div>
                 <h3 className="text-white mb-0 fw-bold">
-             
+                  File Management
                 </h3>
                 <p className="text-white-50 mb-0">
                   Upload and manage your documents
@@ -336,167 +353,150 @@ const handleFileChange = (e) => {
                   <h5 className="mb-0 fw-bold">{financial_year}</h5>
                 </div>
               </div>
-              {/* <div className="col-md-3">
-                <div className="info-box hover-lift">
-                  <small className="d-block opacity-75">User ID</small>
-                  <h5 className="mb-0 fw-bold">{user_id}</h5>
-                </div>
-              </div>
-              <div className="col-md-3">
-                <div className="info-box-alt hover-lift">
-                  <small className="d-block opacity-75">Subject</small>
-                  <h6 className="mb-0 fw-bold text-truncate">{subject}</h6>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
 
         {/* ================= UPLOAD FORM ================= */}
-         {/* <div
+        <div
           className="card shadow-lg mb-4 hover-lift"
           style={{ borderRadius: "20px", border: "none" }}
         >
           <div className="card-body p-4">
-            <div className="d-flex align-items-center mb-4">
+            {/* TITLE CENTER */}
+            <div className="d-flex justify-content-center align-items-center mb-4 text-center">
               <div
                 className={`${
-                  letterUploaded ? "bg-success" : "bg-primary"
+                  letterUploaded > 0 ? "bg-success" : "bg-primary"
                 } bg-opacity-10 p-3 rounded-circle me-3`}
               >
                 <FaUpload
                   size={24}
-                  className={letterUploaded ? "text-success" : "text-primary"}
+                  className={letterUploaded > 0 ? "text-success" : "text-primary"}
                 />
               </div>
               <h4
                 className={`mb-0 fw-bold ${
-                  letterUploaded ? "text-success" : "text-primary"
+                  letterUploaded > 0 ? "text-success" : "text-primary"
                 }`}
               >
-                {letterUploaded ? "Upload Matter Documents" : "Upload Files"}
+                {letterUploaded > 0 ? "Upload Documents" : "Upload Initial Letter"}
               </h4>
             </div>
 
-            <div className="row mb-4">
+            {/* CENTER FORM SECTION */}
+            <div className="row justify-content-center text-center mb-4">
               <div className="col-md-4 mb-3">
                 <label className="form-label fw-bold">
                   <FaFileAlt className="me-2" />
                   Category *
                 </label>
 
-                {!letterUploaded ? (
-                  <select
-                    className="form-select form-select-lg"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    style={{ borderRadius: "10px" }}
-                  >
-                    {categories.map((c) => (
-                      <option key={c.cat_cd} value={c.cat_cd}>
-                        {c.cat_name}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
+                {/* ⬅️ CATEGORY SELECTION LOGIC */}
+                {letterUploaded === 0 ? (
                   <input
-                    className="form-control form-control-lg bg-success bg-opacity-10 text-success fw-bold"
-                    value="Matter"
+                    className="form-control form-control-lg bg-success bg-opacity-10 text-success fw-bold text-center"
+                    value="Letter" // Display 'Letter' name
                     disabled
                     style={{ borderRadius: "10px" }}
                   />
+                ) : (
+                  <select
+                    className="form-select form-select-lg text-center"
+                    value={selectedCategory}
+                    onChange={handleCategoryChange} // ⬅️ Use new handler
+                    style={{ borderRadius: "10px" }}
+                  >
+                    {categories.map((c) => (
+                      // Only show selectable categories (non-letter categories, and letter if desired)
+                       <option key={c.cat_cd} value={c.cat_cd}>
+                          {c.cat_name}
+                      </option>
+                    ))}
+                  </select>
                 )}
               </div>
 
-              
               <div className="col-md-4 mb-3">
                 <label className="form-label fw-bold">File Name *</label>
                 <input
                   type="text"
-                  className="form-control form-control-lg"
+                  className="form-control form-control-lg text-center"
                   placeholder="File name"
-                  value={letterUploaded ? matterLinkName : linkName}
-                  onChange={(e) =>
-                    letterUploaded
-                      ? setMatterLinkName(e.target.value)
-                      : setLinkName(e.target.value)
-                  }
-                 
+                  value={currentLinkName}
+                  onChange={(e) => setLinkName(e.target.value)}
                   style={{ borderRadius: "10px" }}
                 />
               </div>
 
-      
-             
-            </div>
-             <div className="col-md-8 mb-3">
-                <label className="form-label fw-bold">Choose File *</label>
+              {/* BROWSE BUTTON CENTER */}
+              <div className="col-md-8 mb-3 d-flex justify-content-center">
+                <div className="w-100">
+                  <label className="form-label fw-bold">Choose File *</label>
 
-                <input
-                  type="file"
-                  ref={letterUploaded ? matterFileInputRef : fileInputRef}
-                  onChange={handleFileChange}
-                 
-                  style={{ display: "none" }}
-                />
+                  <input
+                    type="file"
+                    ref={currentFileInputRef}
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
 
-                <button
-                  type="button"
-                  className="btn btn-primary btn-lg w-100"
-                  style={{ borderRadius: "10px" }}
-                  onClick={() =>
-                    (letterUploaded
-                      ? matterFileInputRef.current
-                      : fileInputRef.current
-                    ).click()
-                  }
-                >
-                  Browse
-                </button>
-              </div>
-
-            
-             <div className="row">
-              <div className="col-md-8">
-                <div
-                  className={`upload-zone ${dragActive ? "drag-active" : ""}`}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                  onClick={() => {
-                    if (letterUploaded) matterFileInputRef.current?.click();
-                    else fileInputRef.current?.click();
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className="text-center">
-                    <FaUpload
-                      size={50}
-                      className={dragActive ? "text-primary" : "text-muted"}
-                    />
-                    <h5 className="mt-3 fw-bold">Drag & Drop Files Here</h5>
-                    <p className="text-muted">or use the file input above</p>
-                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-lg w-100"
+                    style={{ borderRadius: "10px" }}
+                    onClick={() => currentFileInputRef.current.click()}
+                  >
+                    Browse
+                  </button>
                 </div>
-              </div> 
+              </div>
+            </div>
 
-           
-           <div className="col-md-4">
-                <div className="preview-card">
-                  {!previewURL ? (
+            {/* DRAG + DROP OR PREVIEW CENTERED */}
+
+            <div className="row justify-content-center">
+              <div className="col-md-8">
+                {/* NO PREVIEW → DRAG BOX */}
+                {!previewURL ? (
+                  <div
+                    className={`upload-zone center-box ${
+                      dragActive ? "drag-active" : ""
+                    }`}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                    onClick={() => currentFileInputRef.current?.click()}
+                    style={{
+                      cursor: "pointer",
+                      borderRadius: "15px",
+                    }}
+                  >
                     <div className="text-center">
-                      <FaFileAlt size={50} className="text-muted mb-2" />
-                      <p className="text-muted mb-0">No file selected</p>
+                      <FaUpload
+                        size={50}
+                        className={dragActive ? "text-primary" : "text-muted"}
+                      />
+                      <h5 className="mt-3 fw-bold">
+                        Drag & Drop Files Here
+                      </h5>
+                      <p className="text-muted">or click to browse</p>
                     </div>
-                  ) : (
-                    <div className="w-100">
+                  </div>
+                ) : (
+                  <>
+                    {/* PREVIEW CENTERED */}
+                    <div
+                      className="preview-card p-2 bg-light rounded center-box"
+                      style={{ height: "250px" }}
+                    >
                       {previewType.startsWith("image/") && (
                         <img
                           src={previewURL}
                           className="img-fluid rounded"
                           style={{
-                            maxHeight: "200px",
+                            maxHeight: "230px",
                             width: "100%",
                             objectFit: "contain",
                           }}
@@ -509,7 +509,7 @@ const handleFileChange = (e) => {
                           src={previewURL}
                           style={{
                             width: "100%",
-                            height: "200px",
+                            height: "230px",
                             border: 0,
                             borderRadius: "10px",
                           }}
@@ -520,113 +520,31 @@ const handleFileChange = (e) => {
                       {!previewType.startsWith("image/") &&
                         previewType !== "application/pdf" && (
                           <div className="text-center">
-                            <FaFileAlt
-                              size={50}
-                              className="text-primary mb-2"
-                            />
-                            <p className="fw-bold">
-                              {(file || matterFile)?.name}
-                            </p>
+                            <FaFileAlt size={50} className="text-primary mb-2" />
+                            <p className="fw-bold">{currentFile?.name}</p>
                           </div>
                         )}
                     </div>
-                  )}
-                </div>
+
+                    {/* ✅ FILE SIZE OUTSIDE PREVIEW BOX */}
+                    {fileSize && (
+                      <p className="text-muted text-center mt-2">
+                        Size: <strong>{fileSize} MB</strong>
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
-            </div> 
-
-<div className="row ">
-
-  <div className="col-md-8">
-
-
-    {!previewURL ? (
-      <div
-        className={`upload-zone ${dragActive ? "drag-active" : ""}`}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-        onClick={() => {
-          if (letterUploaded) matterFileInputRef.current?.click();
-          else fileInputRef.current?.click();
-        }}
-        style={{ cursor: "pointer", height: "250px" }}
-      >
-        <div className="text-center">
-          <FaUpload
-            size={50}
-            className={dragActive ? "text-primary" : "text-muted"}
-          />
-          <h5 className="mt-3 fw-bold">Drag & Drop Files Here</h5>
-          <p className="text-muted">or click to browse</p>
-        </div>
-      </div>
-    ) : (
-    
-      <div className="preview-card p-2 bg-light rounded" style={{ height: "250px" }}>
-
-        {previewType.startsWith("image/") && (
-          <img
-            src={previewURL}
-            className="img-fluid rounded"
-            style={{ maxHeight: "230px", width: "100%", objectFit: "contain" }}
-            alt="Preview"
-          />
-        )}
-
-        {previewType === "application/pdf" && (
-          <iframe
-            src={previewURL}
-            style={{
-              width: "100%",
-              height: "230px",
-              border: 0,
-              borderRadius: "10px",
-            }}
-            title="PDF Preview"
-          ></iframe>
-        )}
-
-        {!previewType.startsWith("image/") &&
-          previewType !== "application/pdf" && (
-            <div className="text-center">
-              <FaFileAlt size={50} className="text-primary mb-2" />
-              <p className="fw-bold">{(file || matterFile)?.name}</p>
             </div>
-          )}
-      </div>
-    )}
 
-  </div>
-
-
- <div className="col-md-4">
-    <div className="preview-card text-center p-3">
-      {!previewURL ? (
-        <>
-          <FaFileAlt size={50} className="text-muted mb-2" />
-          <p className="text-muted mb-0">No file selected</p>
-        </>
-      ) : (
-        <>
-          <FaCheckCircle size={50} className="text-success mb-2" />
-          <p className="fw-bold mb-0">{(file || matterFile)?.name}</p>
-        </>
-      )}
-    </div>
-  </div> 
-</div>
-
-            
-
-           
+            {/* UPLOAD BUTTON CENTER */}
             <div className="text-center mt-4">
               <button
                 className={`btn ${
-                  letterUploaded ? "btn-gradient-success" : "btn-gradient"
+                  letterUploaded > 0 ? "btn-gradient-success" : "btn-gradient"
                 } btn-lg px-5 py-3`}
-                onClick={letterUploaded ? handleMatterUpload : handleUpload}
+                onClick={handleUpload}
+                disabled={!file || !linkName} // Disable if no file or linkName
                 style={{
                   borderRadius: "50px",
                   fontWeight: "bold",
@@ -634,233 +552,21 @@ const handleFileChange = (e) => {
                 }}
               >
                 <FaUpload className="me-2" />
-                {letterUploaded ? "Upload Matter File" : "Upload File"}
+                {letterUploaded > 0 ? "Upload File" : "Upload Letter"}
               </button>
             </div>
           </div>
-        </div>  */}
-
-
-
-        <div
-  className="card shadow-lg mb-4 hover-lift"
-  style={{ borderRadius: "20px", border: "none" }}
->
-  <div className="card-body p-4">
-
-    {/* TITLE CENTER */}
-    <div className="d-flex justify-content-center align-items-center mb-4 text-center">
-      <div
-        className={`${
-          letterUploaded ? "bg-success" : "bg-primary"
-        } bg-opacity-10 p-3 rounded-circle me-3`}
-      >
-        <FaUpload
-          size={24}
-          className={letterUploaded ? "text-success" : "text-primary"}
-        />
-      </div>
-      <h4
-        className={`mb-0 fw-bold ${
-          letterUploaded ? "text-success" : "text-primary"
-        }`}
-      >
-        {letterUploaded ? "Upload Matter Documents" : "Upload Files"}
-      </h4>
-    </div>
-
-    {/* CENTER FORM SECTION */}
-    <div className="row justify-content-center text-center mb-4">
-      <div className="col-md-4 mb-3">
-        <label className="form-label fw-bold">
-          <FaFileAlt className="me-2" />
-          Category *
-        </label>
-
-        {!letterUploaded ? (
-          <select
-            className="form-select form-select-lg text-center"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{ borderRadius: "10px" }}
-          >
-            {categories.map((c) => (
-              <option key={c.cat_cd} value={c.cat_cd}>
-                {c.cat_name}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <input
-            className="form-control form-control-lg bg-success bg-opacity-10 text-success fw-bold text-center"
-            value="Matter"
-            disabled
-            style={{ borderRadius: "10px" }}
-          />
-        )}
-      </div>
-
-      <div className="col-md-4 mb-3">
-        <label className="form-label fw-bold">File Name *</label>
-        <input
-          type="text"
-          className="form-control form-control-lg text-center"
-          placeholder="File name"
-          value={letterUploaded ? matterLinkName : linkName}
-          onChange={(e) =>
-            letterUploaded
-              ? setMatterLinkName(e.target.value)
-              : setLinkName(e.target.value)
-          }
-          style={{ borderRadius: "10px" }}
-        />
-      </div>
-
-      {/* BROWSE BUTTON CENTER */}
-      <div className="col-md-8 mb-3 d-flex justify-content-center">
-        <div className="w-100">
-          <label className="form-label fw-bold">Choose File *</label>
-
-          <input
-            type="file"
-            ref={letterUploaded ? matterFileInputRef : fileInputRef}
-            onChange={handleFileChange}
-            style={{ display: "none" }}
-          />
-
-          <button
-            type="button"
-            className="btn btn-primary btn-lg w-100"
-            style={{ borderRadius: "10px" }}
-            onClick={() =>
-              (letterUploaded
-                ? matterFileInputRef.current
-                : fileInputRef.current
-              ).click()
-            }
-          >
-            Browse
-          </button>
         </div>
-      </div>
-    </div>
-
-    {/* DRAG + DROP OR PREVIEW CENTERED */}
-
-<div className="row justify-content-center">
-  <div className="col-md-8">
-
-    {/* NO PREVIEW → DRAG BOX */}
-    {!previewURL ? (
-      <div
-        className={`upload-zone center-box ${
-          dragActive ? "drag-active" : ""
-        }`}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-        onClick={() => {
-          if (letterUploaded) matterFileInputRef.current?.click();
-          else fileInputRef.current?.click();
-        }}
-        style={{
-          cursor: "pointer",
-      
-          borderRadius: "15px",
-        }}
-      >
-        <div className="text-center">
-          <FaUpload
-            size={50}
-            className={dragActive ? "text-primary" : "text-muted"}
-          />
-          <h5 className="mt-3 fw-bold">Drag & Drop Files Here</h5>
-          <p className="text-muted">or click to browse</p>
-        </div>
-      </div>
-    ) : (
-      <>
-        {/* PREVIEW CENTERED */}
-        <div
-          className="preview-card p-2 bg-light rounded center-box"
-          style={{ height: "250px" }}
-        >
-          {previewType.startsWith("image/") && (
-            <img
-              src={previewURL}
-              className="img-fluid rounded"
-              style={{
-                maxHeight: "230px",
-                width: "100%",
-                objectFit: "contain",
-              }}
-              alt="Preview"
-            />
-          )}
-
-          {previewType === "application/pdf" && (
-            <iframe
-              src={previewURL}
-              style={{
-                width: "100%",
-                height: "230px",
-                border: 0,
-                borderRadius: "10px",
-              }}
-              title="PDF Preview"
-            ></iframe>
-          )}
-
-          {!previewType.startsWith("image/") &&
-            previewType !== "application/pdf" && (
-              <div className="text-center">
-                <FaFileAlt size={50} className="text-primary mb-2" />
-                <p className="fw-bold">{(file || matterFile)?.name}</p>
-              </div>
-            )}
-        </div>
-
-        {/* ✅ FILE SIZE OUTSIDE PREVIEW BOX */}
-        {fileSize && (
-          <p className="text-muted text-center mt-2">
-            Size: <strong>{fileSize} MB</strong>
-          </p>
-        )}
-      </>
-    )}
-  </div>
-</div>
-
-
-
-
-
-    {/* UPLOAD BUTTON CENTER */}
-    <div className="text-center mt-4">
-      <button
-        className={`btn ${
-          letterUploaded ? "btn-gradient-success" : "btn-gradient"
-        } btn-lg px-5 py-3`}
-        onClick={letterUploaded ? handleMatterUpload : handleUpload}
-        style={{
-          borderRadius: "50px",
-          fontWeight: "bold",
-          fontSize: "18px",
-        }}
-      >
-        <FaUpload className="me-2" />
-        {letterUploaded ? "Upload Matter File" : "Upload File"}
-      </button>
-    </div>
-  </div>
-</div>
-
 
         {/* ===================== FILE TABLE ===================== */}
         <div className="card shadow-lg mb-5">
           <div className="card-header bg-dark text-white">
-            <h5 className="mb-0">Uploaded Files</h5>
+            <h5 className="mb-0">
+                Uploaded Files for Category: 
+                <span className="fw-bold ms-2">
+                    {categories.find(c => c.cat_cd === selectedCategory)?.cat_name || "N/A"}
+                </span>
+            </h5>
           </div>
 
           <div className="card-body table-responsive">
@@ -870,50 +576,81 @@ const handleFileChange = (e) => {
                   <th style={{ width: "80px" }}>S.No</th>
                   <th>File Name</th>
                   <th>File Size</th>
-                  <th>file type</th>
-                <th>Action</th>
+                  <th>File Type</th>
+                  <th>Action</th>
                 </tr>
               </thead>
 
-              
-
-
               <tbody>
-  {fileList.map((file, index) => {
-    console.log("File row →", file); // ✅ Correct place
-
-    return (
-      <tr key={file.sno}>
-        <td className="fw-bold">{index + 1}</td>
-        <td className="fw-semibold">{file.link_name}</td>
-        <td>{(file.file_size_in_bytes / (1024 * 1024)).toFixed(2)} MB</td>
-        <td>{file.content_type }</td>
-        <td className="d-flex justify-content-around">
-          <span><a
-            href={`http://localhost:3080/${file.file_path}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-success"
-          >
-            <FaDownload /> 
-          </a></span>
-          <span className="btn btn-danger"><FaTrash/></span>
-          <span className="btn btn-warning"><FaPencilAlt/></span>
-        </td>
-      </tr>
-    );
-  })}
-</tbody>
-
+                {fileList.map((file, index) => {
+                  return (
+                    <tr key={file.sno}>
+                      <td className="fw-bold">{index + 1}</td>
+                      <td className="fw-semibold">{file.link_name}</td>
+                      <td>
+                        {(file.file_size_in_bytes / (1024 * 1024)).toFixed(2)}{" "}
+                        MB
+                      </td>
+                      <td>{file.content_type}</td>
+                      <td className="d-flex justify-content-around">
+                        <span>
+                          <a
+                            href={`http://localhost:3080/${file.file_path}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-success"
+                          >
+                            <FaDownload />
+                          </a>
+                        </span>
+                        <button
+                            className="btn btn-danger"
+                            onClick={() => deleteFile(file.sno)}
+                        >
+                            <FaTrash />
+                        </button>
+                        {/* Assuming edit is not implemented, kept for consistency */}
+                        <span className="btn btn-warning">
+                          <FaPencilAlt />
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
             </table>
+            {fileList.length === 0 && (
+                <div className="text-center text-muted py-3">
+                    No files uploaded in this category.
+                </div>
+            )}
           </div>
         </div>
-
       </div>
-         <div className="text-center mt-3">
-        <button className="btn btn-secondary px-4" onClick={() => navigate(-1)}>
+      <div className="text-center mt-3">
+        <button  className="btn px-4 text-white me-4"
+  style={{
+    background: "linear-gradient(135deg, #fa1837ff 100%)",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: "bold"
+  }} onClick={() => navigate(-1)}>
           Back
         </button>
+
+       <button
+  className="btn px-4 text-white"
+  style={{
+    background: "linear-gradient(135deg, #93a6fbff 0%, #3935f5ff 100%)",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: "bold"
+  }}
+  onClick={() => navigate("/forwardto")}
+>
+ next 
+</button>
+   
       </div>
     </div>
   );
