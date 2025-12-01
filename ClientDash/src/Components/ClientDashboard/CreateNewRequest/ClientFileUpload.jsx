@@ -172,20 +172,42 @@ const ClientFileUpload = () => {
 
 
   // ---------------- DELETE FILE ----------------
-  const deleteFile = async (sno) => {
-    if (!window.confirm("Delete this file?")) return;
+  // const deleteFile = async (sno) => {
+  //   if (!window.confirm("Delete this file?")) return;
 
-    try {
-      await axios.delete(
-        `http://localhost:3080/api/files/${ref_id}/${financial_year}/${sno}`
-      );
-      // Re-fetch categories to check if letter count changes
-      await fetchCategories();
-      fetchFiles();
-    } catch (err) {
-      console.error("Delete failed:", err);
-    }
-  };
+  //   try {
+  //     await axios.delete(
+  //       `http://localhost:3080/api/files/delete//${ref_id}/${financial_year}/${sno}`
+  //     );
+  //     // Re-fetch categories to check if letter count changes
+  //     await fetchCategories();
+  //     fetchFiles();
+  //   } catch (err) {
+  //     console.error("Delete failed:", err);
+  //   }
+  // };
+
+
+
+  const deleteFile = async (sno) => {
+  if (!window.confirm("Delete this file?")) return;
+
+  try {
+    await axios.delete(
+      `http://localhost:3080/api/files/delete/${ref_id}/${financial_year}/${sno}`,
+      {
+        data: {
+          user_id,
+        },
+      }
+    );
+
+    await fetchCategories();
+    fetchFiles();
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
+};
 
   // ---------------- DRAG & DROP ----------------
   const handleDrag = (e) => {

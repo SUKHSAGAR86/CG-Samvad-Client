@@ -1,5 +1,3 @@
-
-
 const { pool, sql, poolConnect } = require("../Database/dbConfig");
 const getClientIp = require("../utils/getClientIp");
 
@@ -93,7 +91,6 @@ const getFiles = async (req, res) => {
 //   }
 // };
 
-
 const uploadFile = async (req, res) => {
   try {
     // console.log("======== FILE UPLOAD DEBUG START ========");
@@ -172,17 +169,22 @@ const uploadFile = async (req, res) => {
       status: result.output.returnval,
       message: "Uploaded successfully",
     });
-
   } catch (err) {
-    console.error("❌ Upload Error:", err);
+    console.error("Upload Error:", err);
     res.status(500).json({ error: "Server error", details: err.message });
   }
 };
 
-
 // ===================== UPDATE FILE =====================
 const updateFile = async (req, res) => {
   try {
+
+    const { user_id, user_name } = req.body || {};
+    if (!user_id) return res.status(400).json({ error: "user_id required" });
+
+
+
+    console.log("Update File:",req.body)
     await poolConnect;
     const file = req.file;
     const body = req.body;
@@ -192,6 +194,7 @@ const updateFile = async (req, res) => {
     request.input("financial_year", sql.VarChar(9), body.financial_year);
     request.input("sno", sql.Int, parseInt(body.sno, 10));
     request.input("link_name", sql.NVarChar(250), body.link_name);
+     request.input("user_name", sql.NVarChar(100), user_name || "");
     request.input(
       "file_data",
       sql.VarBinary(sql.MAX),
@@ -226,12 +229,17 @@ const updateFile = async (req, res) => {
 };
 
 // ===================== DELETE FILE =====================
+
 const deleteFile = async (req, res) => {
   try {
+    // console.log("DELETE Body:", req.body);
+
+    const { user_id, user_name } = req.body || {};
+    if (!user_id) return res.status(400).json({ error: "user_id required" });
+
     await poolConnect;
 
     const { ref_id, financial_year, sno } = req.params;
-    const { user_id, user_name } = req.body;
     const userIp = getClientIp(req);
 
     const request = pool.request();
