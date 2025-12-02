@@ -18,6 +18,10 @@ const RequestForm = ({ category }) => {
       localStorage.setItem("user_id", "00002");
     }
 
+      if (!localStorage.getItem("user_name")) {
+      localStorage.setItem("user_name", "SUPERINTENDING ENGINEER, City Circle-II CSPDCL,Raipur, रायपुर");
+    }
+
     // ================== Fetch IP==================
     const getIP = async () => {
       try {
@@ -37,6 +41,7 @@ const RequestForm = ({ category }) => {
 
   const financial_year = localStorage.getItem("financial_year");
   const user_id = localStorage.getItem("user_id");
+  const user_name = localStorage.getItem("user_name");
 
   // ===================== Category Handling ===================
   const cat_text = category?.cat_text || "";
@@ -120,6 +125,7 @@ const RequestForm = ({ category }) => {
         ...formData,
         financial_year: financial_year,
         user_id: user_id,
+        user_name:user_name,
       };
 
       const res = await axios.post(
@@ -188,6 +194,7 @@ const RequestForm = ({ category }) => {
         ref_id: savedRefId,
         financial_year,
         user_id,
+        user_name,
         subject: formData.subject,
       },
     });

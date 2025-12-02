@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./gtt.css";
+import { use } from "react";
 
 const ForwardTo = () => {
   const financial_year = localStorage.getItem("financial_year");
   const user_id = localStorage.getItem("user_id");
+    const user_name = localStorage.getItem("user_name");
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,6 +27,7 @@ const ForwardTo = () => {
         params: {
           financial_year,
           user_id,
+          user_name,
         },
       })
       .then((res) => {
@@ -46,6 +49,7 @@ const ForwardTo = () => {
           params: {
             financial_year,
             user_id,
+            user_name,
           },
         }
       );
@@ -75,6 +79,7 @@ const ForwardTo = () => {
             ref_id,
             financial_year,
             user_id,
+            user_name,
             action: "delete",
           },
         }

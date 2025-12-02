@@ -17,7 +17,7 @@ const ClientFileUpload = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const { ref_id, financial_year, user_id } = state || {}; // Removed 'categary', 'subject' as they aren't used for initial state
+  const { ref_id, financial_year, user_id,user_name } = state || {}; // Removed 'categary', 'subject' as they aren't used for initial state
 
   const fileInputRef = useRef(null);
 
@@ -261,6 +261,11 @@ const ClientFileUpload = () => {
   };
 
 
+
+  const handleEdit=(e)=>{
+
+  }
+
   // ---------------- Auto File Name ----------------
   const generateNextFileName = (cat_cd) => {
     // Filter fileList by the category code that the *new* file will be uploaded to
@@ -375,6 +380,7 @@ const ClientFileUpload = () => {
                   <h5 className="mb-0 fw-bold">{financial_year}</h5>
                 </div>
               </div>
+              
             </div>
           </div>
         </div>

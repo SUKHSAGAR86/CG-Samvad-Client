@@ -176,42 +176,94 @@ const uploadFile = async (req, res) => {
 };
 
 // ===================== UPDATE FILE =====================
+  // const updateFile = async (req, res) => {
+  //   try {
+
+  //     const { user_id, user_name } = req.body || {};
+  //     if (!user_id) return res.status(400).json({ error: "user_id required" });
+
+
+
+  //     console.log("Update File:",req.body)
+  //     await poolConnect;
+  //     const file = req.file;
+  //     const body = req.body;
+  //     const userIp = getClientIp(req);
+  //     const request = pool.request();
+  //     request.input("ref_id", sql.VarChar(12), body.ref_id);
+  //     request.input("financial_year", sql.VarChar(9), body.financial_year);
+  //     request.input("sno", sql.Int, parseInt(body.sno, 10));
+  //     request.input("link_name", sql.NVarChar(250), body.link_name);
+  //     request.input("user_name", sql.NVarChar(100), user_name || "");
+  //     request.input(
+  //       "file_data",
+  //       sql.VarBinary(sql.MAX),
+  //       file ? file.buffer : null
+  //     );
+  //     request.input(
+  //       "file_size_in_bytes",
+  //       sql.Numeric(18, 0),
+  //       file ? file.size : body.file_size_in_bytes
+  //     );
+  //     request.input(
+  //       "content_type",
+  //       sql.NVarChar(100),
+  //       file ? file.mimetype : body.content_type
+  //     );
+  //     request.input("user_id", sql.VarChar(5), body.user_id);
+  //     request.input("user_name", sql.NVarChar(100), body.user_name || "");
+  //     request.input("user_ip", sql.VarChar(20), userIp);
+  //     request.input("action", sql.VarChar(10), "update");
+  //     request.output("returnval", sql.Int);
+
+  //     const result = await request.execute("Client_FileUpload_CRUD");
+
+  //     return res.status(200).json({
+  //       status: result.output.returnval,
+  //       message: "Updated successfully",
+  //     });
+  //   } catch (err) {
+  //     console.error("Update Error:", err);
+  //     res.status(500).json({ error: "Server error" });
+  //   }
+  // };
+
 const updateFile = async (req, res) => {
   try {
-
     const { user_id, user_name } = req.body || {};
     if (!user_id) return res.status(400).json({ error: "user_id required" });
 
+    console.log("Update File:", req.body);
 
-
-    console.log("Update File:",req.body)
     await poolConnect;
     const file = req.file;
     const body = req.body;
     const userIp = getClientIp(req);
+
     const request = pool.request();
+
     request.input("ref_id", sql.VarChar(12), body.ref_id);
     request.input("financial_year", sql.VarChar(9), body.financial_year);
     request.input("sno", sql.Int, parseInt(body.sno, 10));
     request.input("link_name", sql.NVarChar(250), body.link_name);
-     request.input("user_name", sql.NVarChar(100), user_name || "");
-    request.input(
-      "file_data",
-      sql.VarBinary(sql.MAX),
-      file ? file.buffer : null
-    );
+
+    // FIX: Only one user_name input
+    request.input("user_name", sql.NVarChar(100), body.user_name || user_name || "");
+
+    request.input("file_data", sql.VarBinary(sql.MAX), file ? file.buffer : null);
     request.input(
       "file_size_in_bytes",
       sql.Numeric(18, 0),
       file ? file.size : body.file_size_in_bytes
     );
+
     request.input(
       "content_type",
       sql.NVarChar(100),
       file ? file.mimetype : body.content_type
     );
+
     request.input("user_id", sql.VarChar(5), body.user_id);
-    request.input("user_name", sql.NVarChar(100), body.user_name || "");
     request.input("user_ip", sql.VarChar(20), userIp);
     request.input("action", sql.VarChar(10), "update");
     request.output("returnval", sql.Int);
@@ -227,6 +279,9 @@ const updateFile = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+
 
 // ===================== DELETE FILE =====================
 
