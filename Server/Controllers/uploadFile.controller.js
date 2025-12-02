@@ -233,7 +233,7 @@ const updateFile = async (req, res) => {
     const { user_id, user_name } = req.body || {};
     if (!user_id) return res.status(400).json({ error: "user_id required" });
 
-    console.log("Update File:", req.body);
+    // console.log("Update File:", req.body);
 
     await poolConnect;
     const file = req.file;
