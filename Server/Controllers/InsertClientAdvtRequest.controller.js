@@ -1,14 +1,6 @@
 const { pool, sql, poolConnect } = require("../Database/dbConfig");
 const getClientIp=require("../utils/getClientIp")
 
-// const getClientIp = (req) => {
-//   return (
-//     req.headers["x-forwarded-for"]?.split(",")[0] || // proxy / hosting
-//     req.connection.remoteAddress ||
-//     req.socket.remoteAddress ||
-//     (req.connection.socket ? req.connection.socket.remoteAddress : null)
-//   );
-// };
 
 // --------------------------- INSERT — action = 'post'----------------------------------
 
@@ -79,28 +71,61 @@ const insertClientAdvtRequest = async (req, res) => {
   }
 };
 
-// -------------------------GET ALL — action = 'get'------------------------------------
+// -------------------------GET ALL — action------------------------------------
 
-const getAllRequests = async (req, res) => {
+const getRecords = async (req, res) => {
   try {
+    // 1. Ensure connection is available (assuming poolConnect is a promise that resolves)
     await poolConnect;
 
-    const { user_id, financial_year } = req.query;
+    const { user_id, financial_year, action } = req.query;
 
+    if (!action) {
+      return res.status(400).json({ error: "Action is required" });
+    }
+
+    // 2. Prepare the SQL request
     const request = pool.request();
     request.input("user_id", sql.VarChar(5), user_id);
     request.input("financial_year", sql.VarChar(9), financial_year);
-    request.input("ref_id", sql.VarChar(10), "");
-    request.input("action", sql.VarChar(10), "get");
+    // Ensure ref_id is handled correctly, since it's an input to an "Insert" procedure,
+    // but you are using it for "Get" actions.
+    request.input("ref_id", sql.VarChar(10), ""); 
+    request.input("action", sql.VarChar(50), action);
 
+    // 3. Execute the stored procedure
     const result = await request.execute("Sp_Insert_Client_Advt_Request");
 
-    return res.status(200).json(result.recordset);
+    // 4. Robust Data Extraction
+    // Find the first recordset that contains rows, or default to an empty array.
+    // This is a robust way to handle SPs that might return multiple empty sets 
+    // before the actual data.
+    const finalData = result.recordsets.find(rs => rs.length > 0) || [];
+
+    // --- Logging for Debugging ---
+    console.log("--- SQL Execution Result Debug ---");
+    console.log("Input Action:", action);
+    console.log("Recordsets Found:", result.recordsets.length);
+    console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
+    console.log("Final Data Rows:", finalData.length);
+    console.log("SQL Return Value (0 for success is typical):", result.returnValue);
+    console.log("-------------------------------------");
+
+    // 5. Send the response
+    return res.status(200).json({
+      message: "Success",
+      data: finalData
+    });
+
   } catch (err) {
     console.error("Get All Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+
+
 
 // ------------------------------GET BY ID — action = 'get_by_id'-------------------------------
 const getRequestById = async (req, res) => {
@@ -224,10 +249,15 @@ const deleteClientAdvtRequest = async (req, res) => {
   }
 };
 
+
+
+
+
 module.exports = {
   insertClientAdvtRequest,
-  getAllRequests,
+  getRecords,
   getRequestById,
   updateClientAdvtRequest,
   deleteClientAdvtRequest,
+
 };

@@ -23,6 +23,7 @@ const uploadFile=require("./Routes/uploadFile.route");
 
 
 
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -39,6 +40,9 @@ app.use("/api",insertClientAdvtRequest)
 app.use("/api",clientNotices);
 app.use("/api",newsRateList);
 app.use("/api",uploadFile);
+
+
+
 
 
 

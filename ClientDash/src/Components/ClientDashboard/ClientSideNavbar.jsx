@@ -237,7 +237,7 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         </NavLink>
 
         <NavLink
-          to="/newsratelist"
+          to="/report"
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >

@@ -12,14 +12,17 @@ const RequestForm = ({ category }) => {
   // ===============Create session values in localStorage=============
   useEffect(() => {
     if (!localStorage.getItem("financial_year")) {
-      localStorage.setItem("financial_year", "2025-2026");
+      localStorage.setItem("financial_year", "2024-2025");
     }
     if (!localStorage.getItem("user_id")) {
-      localStorage.setItem("user_id", "00002");
+      localStorage.setItem("user_id", "00100");
     }
 
-      if (!localStorage.getItem("user_name")) {
-      localStorage.setItem("user_name", "SUPERINTENDING ENGINEER, City Circle-II CSPDCL,Raipur, रायपुर");
+    if (!localStorage.getItem("user_name")) {
+      localStorage.setItem(
+        "user_name",
+        "SUPERINTENDING ENGINEER, City Circle-II CSPDCL,Raipur, रायपुर"
+      );
     }
 
     // ================== Fetch IP==================
@@ -47,8 +50,9 @@ const RequestForm = ({ category }) => {
   const cat_text = category?.cat_text || "";
   const category_option = cat_text ? cat_text.split("-")[0].trim() : "";
   const cat_id = category?.cat_id || "";
-  const form_option =
-    ["classified", "display"].includes(category_option.toLowerCase());
+  const form_option = ["classified", "display"].includes(
+    category_option.toLowerCase()
+  );
 
   // ================ Form State ===================
   const [formData, setFormData] = useState({
@@ -125,7 +129,7 @@ const RequestForm = ({ category }) => {
         ...formData,
         financial_year: financial_year,
         user_id: user_id,
-        user_name:user_name,
+        user_name: user_name,
       };
 
       const res = await axios.post(
@@ -204,7 +208,10 @@ const RequestForm = ({ category }) => {
     <div className="container py-4">
       {/* Popup Modal */}
       {showModal && (
-        <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,0.6)" }}>
+        <div
+          className="modal fade show d-block"
+          style={{ background: "rgba(0,0,0,0.6)" }}
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header bg-success text-white">
@@ -237,9 +244,13 @@ const RequestForm = ({ category }) => {
       >
         <div className="col-12">
           <div className="card shadow-sm">
-            <div className="card-header bg-primary text-white">Basic Details</div>
+            <div className="card-header bg-primary text-white">
+              Basic Details
+            </div>
             <div className="text-center mt-2">
-              <label className="fw-bold">Financial Year: {financial_year}</label>
+              <label className="fw-bold">
+                Financial Year: {financial_year}
+              </label>
             </div>
 
             <div className="card-body row g-3">
@@ -317,26 +328,29 @@ const RequestForm = ({ category }) => {
                 </select> */}
 
                 <select
-  className="form-select"
-  name="ref_Category_id"
-  value={formData.ref_Category_id}
-  onChange={(e) => {
-    const selectedId = e.target.value;
-    const selectedText = e.target.options[e.target.selectedIndex].text;
-    
-    setFormData((prev) => ({
-      ...prev,
-      ref_Category_id: selectedId,
-      ref_Category_text: selectedText,
-    }));
-  }}
->
-  {!cat_text ? (
-    <option value="" hidden>--select--</option>
-  ) : (
-    <option value={cat_id}>{category_option}</option>
-  )}
-</select>
+                  className="form-select"
+                  name="ref_Category_id"
+                  value={formData.ref_Category_id}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    const selectedText =
+                      e.target.options[e.target.selectedIndex].text;
+
+                    setFormData((prev) => ({
+                      ...prev,
+                      ref_Category_id: selectedId,
+                      ref_Category_text: selectedText,
+                    }));
+                  }}
+                >
+                  {!cat_text ? (
+                    <option value="" hidden>
+                      --select--
+                    </option>
+                  ) : (
+                    <option value={cat_id}>{category_option}</option>
+                  )}
+                </select>
               </div>
             </div>
 

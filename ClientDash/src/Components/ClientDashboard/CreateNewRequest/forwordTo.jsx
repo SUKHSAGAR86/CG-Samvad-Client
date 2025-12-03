@@ -7,7 +7,7 @@ import { use } from "react";
 const ForwardTo = () => {
   const financial_year = localStorage.getItem("financial_year");
   const user_id = localStorage.getItem("user_id");
-    const user_name = localStorage.getItem("user_name");
+  const user_name = localStorage.getItem("user_name");
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,10 +28,14 @@ const ForwardTo = () => {
           financial_year,
           user_id,
           user_name,
+          action: "get_not_forwarded",
         },
       })
       .then((res) => {
-        setData(res.data); // controller returns recordset directly
+        // console.log(res.data.data);
+   setData(res.data.data);  
+        // console.log("set data",data)
+        console.log("API Response:", res.data.data);
       })
       .catch((err) => console.error("Fetch Error:", err));
   };
@@ -50,6 +54,7 @@ const ForwardTo = () => {
             financial_year,
             user_id,
             user_name,
+            action: "get_by_id",
           },
         }
       );
@@ -166,8 +171,8 @@ const ForwardTo = () => {
                 <td>{row.tender_amt}</td>
                 <td>—</td>
 
-                <td>
-                  <span
+                <td className="d-flex justify-content-center">
+                  <div
                     className="btn btn-warning btn-sm action-btn me-2"
                     onClick={() => {
                       console.log("", row.ref_id);
@@ -175,14 +180,14 @@ const ForwardTo = () => {
                     }}
                   >
                     Edit
-                  </span>
+                  </div>
 
-                  <span
+                  <div
                     className="btn btn-danger btn-sm action-btn"
                     onClick={() => handleDelete(row.ref_id)}
                   >
                     Delete
-                  </span>
+                  </div>
                 </td>
 
                 <td className="text-center">

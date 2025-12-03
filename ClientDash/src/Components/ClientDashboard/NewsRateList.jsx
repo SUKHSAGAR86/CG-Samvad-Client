@@ -95,6 +95,17 @@ const getPageNumbers = () => {
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-3 ">
         
+        
+        <div
+          className="px-3 py-1 fw-bold text-white"
+          style={{
+            backgroundColor: "#00bcd4",
+            borderRadius: "5px",
+            fontSize: "14px",
+          }}
+        >
+          Total&nbsp;&nbsp;{data.length}
+        </div>
         <div
           className="d-flex align-items-center btn btn-outline-success"
           style={{ cursor: "pointer" }}
@@ -107,16 +118,6 @@ const getPageNumbers = () => {
             height="35"
           />
           <span className="  ms-2 fw-semibold">Click to export data</span>
-        </div>
-        <div
-          className="px-3 py-1 fw-bold text-white"
-          style={{
-            backgroundColor: "#00bcd4",
-            borderRadius: "5px",
-            fontSize: "14px",
-          }}
-        >
-          Total&nbsp;&nbsp;{data.length}
         </div>
       </div>
 
