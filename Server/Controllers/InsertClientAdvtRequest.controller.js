@@ -103,13 +103,13 @@ const getRecords = async (req, res) => {
     const finalData = result.recordsets.find(rs => rs.length > 0) || [];
 
     // --- Logging for Debugging ---
-    console.log("--- SQL Execution Result Debug ---");
-    console.log("Input Action:", action);
-    console.log("Recordsets Found:", result.recordsets.length);
-    console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
-    console.log("Final Data Rows:", finalData.length);
-    console.log("SQL Return Value (0 for success is typical):", result.returnValue);
-    console.log("-------------------------------------");
+    // console.log("--- SQL Execution Result Debug ---");
+    // console.log("Input Action:", action);
+    // console.log("Recordsets Found:", result.recordsets.length);
+    // console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
+    // console.log("Final Data Rows:", finalData.length);
+    // console.log("SQL Return Value (0 for success is typical):", result.returnValue);
+    // console.log("-------------------------------------");
 
     // 5. Send the response
     return res.status(200).json({

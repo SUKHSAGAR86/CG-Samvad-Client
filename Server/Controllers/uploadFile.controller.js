@@ -114,9 +114,9 @@ const uploadFile = async (req, res) => {
     const request = pool.request();
 
     // LOGGING EACH INPUT BEFORE EXECUTION
-    const logInput = (name, value) => {
-      console.log(`SQL Input: ${name} =`, value);
-    };
+    // const logInput = (name, value) => {
+    //   console.log(`SQL Input: ${name} =`, value);
+    // };
 
     logInput("ref_id", body.ref_id);
     request.input("ref_id", sql.VarChar(12), body.ref_id);

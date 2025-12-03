@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./gtt.css";
-import { use } from "react";
+
 
 const ForwardTo = () => {
   const financial_year = localStorage.getItem("financial_year");
@@ -170,9 +170,9 @@ const ForwardTo = () => {
                 <td>{formatDate(row.schedule_date)}</td>
                 <td>{row.tender_amt}</td>
                 <td>—</td>
-
-                <td className="d-flex justify-content-center">
-                  <div
+{/* 
+                <td className="">
+                  <span
                     className="btn btn-warning btn-sm action-btn me-2"
                     onClick={() => {
                       console.log("", row.ref_id);
@@ -180,15 +180,31 @@ const ForwardTo = () => {
                     }}
                   >
                     Edit
-                  </div>
+                  </span>
 
-                  <div
+                  <span
                     className="btn btn-danger btn-sm action-btn"
                     onClick={() => handleDelete(row.ref_id)}
                   >
                     Delete
-                  </div>
-                </td>
+                  </span>
+                </td> */}
+
+                <td className="d-flex align-items-center">
+  <span
+    className="btn btn-warning btn-sm action-btn me-2"
+    onClick={() => handleEdit(row.ref_id)}
+  >
+    Edit
+  </span>
+
+  <span
+    className="btn btn-danger btn-sm action-btn"
+    onClick={() => handleDelete(row.ref_id)}
+  >
+    Delete
+  </span>
+</td>
 
                 <td className="text-center">
                   <input className="form-check-input" type="checkbox" />
