@@ -78,7 +78,7 @@ const getRecords = async (req, res) => {
     // 1. Ensure connection is available (assuming poolConnect is a promise that resolves)
     await poolConnect;
 
-    const { user_id, financial_year, action } = req.query;
+    const { user_id, financial_year, action,ref_Category_id } = req.query;
 
     if (!action) {
       return res.status(400).json({ error: "Action is required" });
@@ -93,6 +93,8 @@ const getRecords = async (req, res) => {
     request.input("ref_id", sql.VarChar(10), ""); 
     request.input("action", sql.VarChar(50), action);
 
+     request.input("ref_Category_id", sql.VarChar(3),"02"); 
+
     // 3. Execute the stored procedure
     const result = await request.execute("Sp_Insert_Client_Advt_Request");
 
@@ -103,12 +105,12 @@ const getRecords = async (req, res) => {
     const finalData = result.recordsets.find(rs => rs.length > 0) || [];
 
     // --- Logging for Debugging ---
-    // console.log("--- SQL Execution Result Debug ---");
-    // console.log("Input Action:", action);
-    // console.log("Recordsets Found:", result.recordsets.length);
-    // console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
-    // console.log("Final Data Rows:", finalData.length);
-    // console.log("SQL Return Value (0 for success is typical):", result.returnValue);
+    console.log("--- SQL Execution Result Debug ---");
+    console.log("Input Action:", action);
+    console.log("Recordsets Found:", result.recordsets.length);
+    console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
+    console.log("Final Data Rows:", finalData.length);
+    console.log("SQL Return Value (0 for success is typical):", result.returnValue);
     // console.log("-------------------------------------");
 
     // 5. Send the response

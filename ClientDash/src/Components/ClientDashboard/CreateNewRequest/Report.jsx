@@ -7,11 +7,39 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const Report = () => {
   const financial_year = localStorage.getItem("financial_year");
   const user_id = localStorage.getItem("user_id");
+//  const [category,setCategory]=useState("")
 
-  const [action, setAction] = useState("get");
+  const [action, setAction] = useState("");
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+
+
+
+
+
+
+
+
+
+//category selector
+
+//   const [category, setCategory] = useState("");
+// const [categoryList, setCategoryList] = useState([]);
+
+// useEffect(() => {
+//   loadCategory();
+// }, []);
+
+// const loadCategory = async () => {
+//   try {
+//     const res = await axios.get("http://localhost:3080/api/getCategory");
+//     setCategoryList(res.data.data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
+
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,6 +80,7 @@ const Report = () => {
   };
 
   useEffect(() => {
+    // console.log("ssss :",action);
     fetchData();
   }, [action]);
 
@@ -107,7 +136,7 @@ const Report = () => {
                 setAction(e.target.value);
                 setCurrentPage(1);
               }}
-            >
+            > <option value=""disabled selected>------Select Here------</option>
               <option value="get_forwarded">Forwarded</option>
               <option value="get_not_forwarded">Not Forwarded</option>
               <option value="get_under_process">Under Process</option>
@@ -115,6 +144,45 @@ const Report = () => {
               <option value="get_all_unaccepted">Unaccepted</option>
             </select>
           </div>
+
+
+
+
+              {/* <div className="col-md-3">
+
+<label className="form-label fw-bold"> Select Category</label>
+<select className="form-form-select" value={category} onChange={(e)=>{
+  setCategory(e.target.value);
+  setCurrentPage(1);
+  }} 
+  >
+<option value=""></option>
+
+  </select>
+              </div> */}
+
+{/* <div className="col-md-3">
+  <label className="form-label fw-bold"> Select Category</label>
+
+  <select
+    className="form-select"
+    value={category}
+    onChange={(e) => {
+      setCategory(e.target.value);
+      setCurrentPage(1);
+    }}
+  >
+    <option value="" disabled>
+      ------ Select Here ------
+    </option>
+
+    {categoryList.map((item) => (
+      <option key={item.cat_id} value={item.cat_id}>
+        {item.cat_name}
+      </option>
+    ))}
+  </select>
+</div> */}
 
           {/* Search */}
           <div className="col-md-4">

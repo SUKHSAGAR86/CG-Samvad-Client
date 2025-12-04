@@ -18,6 +18,10 @@ const RequestForm = ({ category }) => {
       localStorage.setItem("user_id", "00100");
     }
 
+    if (!localStorage.getItem("ref_Category_id")) {
+      localStorage.setItem("ref_Category_id", "02");
+    }
+
     if (!localStorage.getItem("user_name")) {
       localStorage.setItem(
         "user_name",
