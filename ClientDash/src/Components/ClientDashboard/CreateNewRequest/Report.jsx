@@ -234,7 +234,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import "./button.css"
 const Report = () => {
   const financial_year = localStorage.getItem("financial_year");
   const user_id = localStorage.getItem("user_id");
@@ -478,7 +478,21 @@ console.log("aa:>",res.data?.data)
                       <td>{item.reject_status}</td>
                       <td>{item.status}</td>
 
-                      <td></td>
+                      <td>
+                        <span
+    className="btn btn-warning btn-sm action-btn me-2"
+    onClick={() => handleEdit(row.ref_id)}
+  >
+    Edit
+  </span>
+
+  <span
+    className="btn btn-danger btn-sm action-btn"
+    onClick={() => handleDelete(row.ref_id)}
+  >
+    Delete
+  </span>
+                      </td>
                     </tr>
                   ))
                 ) : (

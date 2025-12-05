@@ -93,9 +93,9 @@ const getRecords = async (req, res) => {
     // but you are using it for "Get" actions.
     request.input("ref_id", sql.VarChar(10), ""); 
     request.input("action", sql.VarChar(50), action );
-     if(category){
-     request.input("ref_Category_id", sql.VarChar(3),category); 
-     }
+
+     request.input("ref_Category_id", sql.VarChar(3),category || ""); 
+ 
 
     // 3. Execute the stored procedure
     const result = await request.execute("Sp_Insert_Client_Advt_Request");
@@ -107,12 +107,12 @@ const getRecords = async (req, res) => {
     const finalData = result.recordsets.find(rs => rs.length > 0) || [];
 
     // --- Logging for Debugging ---
-    // console.log("--- SQL Execution Result Debug ---");
-    // console.log("Input Action:", action);
-    // console.log("Recordsets Found:", result.recordsets.length);
-    // console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
-    // console.log("Final Data Rows:", finalData.length);
-    // console.log("SQL Return Value (0 for success is typical):", result.returnValue);
+    console.log("--- SQL Execution Result Debug ---");
+    console.log("Input Action:", action);
+    console.log("Recordsets Found:", result.recordsets.length);
+    console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
+    console.log("Final Data Rows:", finalData.length);
+    console.log("SQL Return Value (0 for success is typical):", result.returnValue);
     // console.log("-------------------------------------");
 
     // 5. Send the response
