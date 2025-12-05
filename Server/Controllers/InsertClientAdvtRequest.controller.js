@@ -78,11 +78,12 @@ const getRecords = async (req, res) => {
     // 1. Ensure connection is available (assuming poolConnect is a promise that resolves)
     await poolConnect;
 
-    const { user_id, financial_year, action,ref_Category_id } = req.query;
+    const { user_id, financial_year, action,category } = req.query;
+    // console.log("sss:", req.query);
 
-    if (!action) {
-      return res.status(400).json({ error: "Action is required" });
-    }
+    // if (!action) {
+    //   return res.status(400).json({ error: "Action is required" });
+    // }
 
     // 2. Prepare the SQL request
     const request = pool.request();
@@ -91,9 +92,10 @@ const getRecords = async (req, res) => {
     // Ensure ref_id is handled correctly, since it's an input to an "Insert" procedure,
     // but you are using it for "Get" actions.
     request.input("ref_id", sql.VarChar(10), ""); 
-    request.input("action", sql.VarChar(50), action);
-
-     request.input("ref_Category_id", sql.VarChar(3),"02"); 
+    request.input("action", sql.VarChar(50), action );
+     if(category){
+     request.input("ref_Category_id", sql.VarChar(3),category); 
+     }
 
     // 3. Execute the stored procedure
     const result = await request.execute("Sp_Insert_Client_Advt_Request");
@@ -105,12 +107,12 @@ const getRecords = async (req, res) => {
     const finalData = result.recordsets.find(rs => rs.length > 0) || [];
 
     // --- Logging for Debugging ---
-    console.log("--- SQL Execution Result Debug ---");
-    console.log("Input Action:", action);
-    console.log("Recordsets Found:", result.recordsets.length);
-    console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
-    console.log("Final Data Rows:", finalData.length);
-    console.log("SQL Return Value (0 for success is typical):", result.returnValue);
+    // console.log("--- SQL Execution Result Debug ---");
+    // console.log("Input Action:", action);
+    // console.log("Recordsets Found:", result.recordsets.length);
+    // console.log("Rows in first recordset:", result.recordsets[0] ? result.recordsets[0].length : 0);
+    // console.log("Final Data Rows:", finalData.length);
+    // console.log("SQL Return Value (0 for success is typical):", result.returnValue);
     // console.log("-------------------------------------");
 
     // 5. Send the response
