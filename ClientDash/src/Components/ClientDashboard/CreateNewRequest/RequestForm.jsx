@@ -248,9 +248,9 @@ const RequestForm = ({ category }) => {
       >
         <div className="col-12">
           <div className="card shadow-sm">
-            <div className="card-header bg-primary text-white">
+            {/* <div className="card-header bg-primary text-white">
               Basic Details
-            </div>
+            </div> */}
             <div className="text-center mt-2">
               <label className="fw-bold">
                 Financial Year: {financial_year}
@@ -268,6 +268,16 @@ const RequestForm = ({ category }) => {
                   onChange={handleChange}
                 />
               </div>
+               <div className="col-md-3">
+                <label className="form-label">Letter Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="letter_date"
+                  value={formData.letter_date}
+                  onChange={handleChange}
+                />
+              </div>
 
               <div className="col-md-5">
                 <label className="form-label">Subject</label>
@@ -281,6 +291,18 @@ const RequestForm = ({ category }) => {
                 />
               </div>
 
+              <div className="col-md-3">
+                <label className="form-label">Schedule Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="schedule_date"
+                  value={formData.schedule_date}
+                  onChange={handleChange}
+                />
+              </div>
+
+              
               {form_option && (
                 <div className="col-md-3">
                   <label className="form-label">Tender Amount</label>
@@ -293,28 +315,6 @@ const RequestForm = ({ category }) => {
                   />
                 </div>
               )}
-
-              <div className="col-md-3">
-                <label className="form-label">Letter Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  name="letter_date"
-                  value={formData.letter_date}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-md-3">
-                <label className="form-label">Schedule Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  name="schedule_date"
-                  value={formData.schedule_date}
-                  onChange={handleChange}
-                />
-              </div>
 
               <div className="col-md-3">
                 <label className="form-label">Category</label>
@@ -361,7 +361,7 @@ const RequestForm = ({ category }) => {
             {form_option && (
               <div>
                 <div className="card-header bg-success text-white">
-                  Publication Details
+                  Enter Number of Papers
                 </div>
                 <div className="card-body row">
                   <div className="col-md-3 mb-3">

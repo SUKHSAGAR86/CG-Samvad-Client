@@ -1,0 +1,40 @@
+/* --- Base Style for the Pill --- */
+.category-pill {
+  cursor: pointer;
+  padding: 8px 16px; /* Vertical and horizontal padding */
+  border-radius: 20px; /* Highly rounded corners for the pill shape */
+  font-size: 14px;
+  transition: all 0.3s ease; /* Smooth transitions for hover and selection */
+  user-select: none; /* Prevent text selection */
+  display: inline-flex; /* Ensure it fits content and is aligned */
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Style for the Unselected Pill (Default Look) --- */
+.category-pill-unselected {
+  background-color: #f8f9fa; /* Light background */
+  color: #495057; /* Darker text */
+  border: 1px solid #ced4da; /* Subtle border */
+}
+
+/* Hover effect for unselected pills */
+.category-pill-unselected:hover {
+  background-color: #e9ecef; /* Slightly darker on hover */
+  border-color: #adb5bd;
+}
+
+/* --- Style for the Selected Pill (Highlighted Look) --- */
+.category-pill-selected {
+  /* Use your primary brand color here (e.g., a blue) */
+  background-color: #007bff; 
+  color: #ffffff; /* White text for contrast */
+  border: 1px solid #007bff;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2); /* Subtle shadow for depth */
+}
+
+/* No strong hover needed for selected, but a slight change is fine */
+.category-pill-selected:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
