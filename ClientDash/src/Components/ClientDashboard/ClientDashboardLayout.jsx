@@ -61,8 +61,8 @@ const ClientDashboardLayout = () => {
 
         {/* Page content */}
         <main className="flex-grow-1 p-3 mt-3 mt-lg-0">
-          {/* <Outlet /> */}
-          <CreateNewRequest/>
+       <Outlet /> 
+          {/* <CreateNewRequest/> */}
           
         </main>
 

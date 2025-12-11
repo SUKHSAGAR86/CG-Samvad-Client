@@ -15,14 +15,18 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<ClientDashboardLayout />} />
-        <Route path="/requestform" element={<RequestForm />} />
-        <Route path="/notice" element={<ClientNoticeBoard />} />
-        <Route path="/newrequest" element={<CreateNewRequest />} />
-        <Route path="/forwardto" element={<ForwardTo />} />
-        <Route path="/newsratelist" element={<NewsRatesList />} />
-      <Route path="/upload-file/:ref_id" element={<ClientFileUpload />}/>
-      <Route path="/report" element={<Report/>}/>
+        <Route path="/" element={<ClientDashboardLayout />}>
+
+
+
+        <Route path="requestform" element={<RequestForm />} />
+        <Route path="notice" element={<ClientNoticeBoard />} />
+        <Route path="newrequest" element={<CreateNewRequest />} />
+        <Route path="forwardto" element={<ForwardTo />} />
+        <Route path="newsratelist" element={<NewsRatesList />} />
+      <Route path="upload-file/:ref_id" element={<ClientFileUpload />}/>
+      <Route path="report" element={<Report/>}/>
+      </Route>
 
       </Routes>
     </Router>

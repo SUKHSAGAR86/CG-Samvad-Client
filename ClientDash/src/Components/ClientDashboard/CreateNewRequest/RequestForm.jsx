@@ -259,55 +259,88 @@ const RequestForm = ({ category }) => {
 
             <div className="card-body row g-3">
               <div className="col-md-3">
-                <label className="form-label">Letter No</label>
+                {/* <label className="form-label">Letter No</label> */}
                 <input
                   type="text"
                   className="form-control"
                   name="letter_no"
+                  placeholder="Letter No"
                   value={formData.letter_no}
                   onChange={handleChange}
                 />
               </div>
                <div className="col-md-3">
-                <label className="form-label">Letter Date</label>
+                {/* <label className="form-label">Letter Date</label>
                 <input
                   type="date"
                   className="form-control"
                   name="letter_date"
                   value={formData.letter_date}
                   onChange={handleChange}
-                />
+                /> */}
+
+                <input
+  type="text"
+  className="form-control"
+  name="letter_date"
+  placeholder="Letter Date"
+  onFocus={(e) => (e.target.type = "date")}
+  onBlur={(e) => {
+    if (!e.target.value) e.target.type = "text";
+  }}
+  value={formData.letter_date}
+  onChange={handleChange}
+/>
+
               </div>
 
               <div className="col-md-5">
-                <label className="form-label">Subject</label>
+                {/* <label className="form-label">Subject</label> */}
                 <input
                   type="text"
                   className="form-control"
                   name="subject"
+                  placeholder="Subject"
                   value={formData.subject}
                   onChange={handleChange}
                   required
                 />
               </div>
 
-              <div className="col-md-3">
-                <label className="form-label">Schedule Date</label>
+          <div className="col-md-3">
+                {/* <label className="form-label"></label>
                 <input
                   type="date"
                   className="form-control"
                   name="schedule_date"
+
+                  placeholder="Schedule Date"
                   value={formData.schedule_date}
                   onChange={handleChange}
-                />
-              </div>
+                /> */}
+
+                <input
+  type="text"
+  className="form-control"
+  name="schedule_date"
+  placeholder="Schedule Date"
+  onFocus={(e) => (e.target.type = "date")}
+  onBlur={(e) => {
+    if (!e.target.value) e.target.type = "text";
+  }}
+  value={formData.schedule_date}
+  onChange={handleChange}
+/>
+
+              </div> 
 
               
               {form_option && (
                 <div className="col-md-3">
-                  <label className="form-label">Tender Amount</label>
+                  {/* <label className="form-label">Tender Amount</label> */}
                   <input
                     type="number"
+                    placeholder="Tender Amount"
                     className="form-control"
                     name="tender_amt"
                     value={formData.tender_amt}
@@ -317,23 +350,13 @@ const RequestForm = ({ category }) => {
               )}
 
               <div className="col-md-3">
-                <label className="form-label">Category</label>
-                {/* <select
-                  className="form-select"
-                  name="ref_Category_text"
-                  value={formData.ref_Category_text}
-                  onChange={handleChange}
-                >
-                  {!cat_text ? (
-                    <option hidden>--select--</option>
-                  ) : (
-                    <option value={category_option}>{category_option}</option>
-                  )}
-                </select> */}
+                {/* <label className="form-label">Category</label> */}
+                
 
                 <select
                   className="form-select"
                   name="ref_Category_id"
+                  placeholder="Category"
                   value={formData.ref_Category_id}
                   onChange={(e) => {
                     const selectedId = e.target.value;
@@ -365,8 +388,8 @@ const RequestForm = ({ category }) => {
                 </div>
                 <div className="card-body row">
                   <div className="col-md-3 mb-3">
-                    <label className="form-label">National Newspapers</label>
-                    <input
+                   <input
+                    placeholder="National Newspapers"
                       type="number"
                       className="form-control"
                       name="print_in_national_np"
@@ -375,8 +398,9 @@ const RequestForm = ({ category }) => {
                     />
                   </div>
                   <div className="col-md-3 mb-3">
-                    <label className="form-label">Local Newspapers</label>
+                 
                     <input
+                    placeholder="Local Newspapers"
                       type="number"
                       className="form-control"
                       name="print_in_local_np"
@@ -385,8 +409,9 @@ const RequestForm = ({ category }) => {
                     />
                   </div>
                   <div className="col-md-3 mb-3">
-                    <label className="form-label">State Newspapers</label>
+                  
                     <input
+                    placeholder="State Newspapers"
                       type="number"
                       className="form-control"
                       name="print_in_state_np"
@@ -395,8 +420,9 @@ const RequestForm = ({ category }) => {
                     />
                   </div>
                   <div className="col-md-3 mb-3">
-                    <label className="form-label">Other Newspapers</label>
+                  
                     <input
+                    placeholder="Other Newspapers"
                       type="number"
                       className="form-control"
                       name="print_in_other_np"
@@ -413,6 +439,7 @@ const RequestForm = ({ category }) => {
               <textarea
                 className="form-control"
                 name="remarks"
+              
                 value={formData.remarks}
                 onChange={handleChange}
                 rows="4"

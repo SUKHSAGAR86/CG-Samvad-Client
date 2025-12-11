@@ -76,8 +76,8 @@ const CreateNewRequest = () => {
     
    
     const buttonClasses = isSelected 
-      ? 'btn btn-primary shadow-sm' 
-      : 'btn btn-dark'; 
+      ? 'btn btn-dark shadow-sm' 
+      : 'btn btn-outline-secondary'; 
 
     return (
       <button
