@@ -269,29 +269,42 @@ const RequestForm = ({ category }) => {
                   onChange={handleChange}
                 />
               </div>
-               <div className="col-md-3">
-                {/* <label className="form-label">Letter Date</label>
+              <div className="col-md-3">
+            
                 <input
                   type="date"
-                  className="form-control"
-                  name="letter_date"
-                  value={formData.letter_date}
-                  onChange={handleChange}
-                /> */}
+                  style={{
+                    opacity: 0,
+                    position: "absolute",
+                    pointerEvents: "none",
+                  }}
+                  ref={(el) => (window.letterDatePicker = el)}
+                  min={(() => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - 7);
+                    return d.toISOString().split("T")[0];
+                  })()}
+                  max={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => {
+                    const [yyyy, mm, dd] = e.target.value.split("-");
+                    const formatted = `${dd}-${mm}-${yyyy}`;
 
+                    setFormData((prev) => ({
+                      ...prev,
+                      letter_date: formatted,
+                    }));
+                  }}
+                />
+
+                {/* --- Read-only visible input --- */}
                 <input
-  type="text"
-  className="form-control"
-  name="letter_date"
-  placeholder="Letter Date"
-  onFocus={(e) => (e.target.type = "date")}
-  onBlur={(e) => {
-    if (!e.target.value) e.target.type = "text";
-  }}
-  value={formData.letter_date}
-  onChange={handleChange}
-/>
-
+                  type="text"
+                  className="form-control"
+                  placeholder="Letter Date"
+                  value={formData.letter_date}
+                  readOnly // <-- 🚀 USER CAN NEVER TYPE
+                  onClick={() => window.letterDatePicker.showPicker()} // <-- opens calendar
+                />
               </div>
 
               <div className="col-md-5">
@@ -307,34 +320,44 @@ const RequestForm = ({ category }) => {
                 />
               </div>
 
-          <div className="col-md-3">
-                {/* <label className="form-label"></label>
+              <div className="col-md-3">
+                {/* --- Hidden real date picker for schedule_date --- */}
                 <input
                   type="date"
-                  className="form-control"
-                  name="schedule_date"
+                  style={{
+                    opacity: 0,
+                    position: "absolute",
+                    pointerEvents: "none",
+                  }}
+                  ref={(el) => (window.scheduleDatePicker = el)}
+                  //  Only allow FUTURE dates (tomorrow onwards)
+                  min={(() => {
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    return tomorrow.toISOString().split("T")[0];
+                  })()}
+                  onChange={(e) => {
+                    const [yyyy, mm, dd] = e.target.value.split("-");
+                    const formatted = `${dd}-${mm}-${yyyy}`;
 
+                    setFormData((prev) => ({
+                      ...prev,
+                      schedule_date: formatted,
+                    }));
+                  }}
+                />
+
+                {/* --- Read-only visible input for schedule_date --- */}
+                <input
+                  type="text"
+                  className="form-control"
                   placeholder="Schedule Date"
                   value={formData.schedule_date}
-                  onChange={handleChange}
-                /> */}
+                  readOnly // user cannot type manually
+                  onClick={() => window.scheduleDatePicker.showPicker()} // opens calendar
+                />
+              </div>
 
-                <input
-  type="text"
-  className="form-control"
-  name="schedule_date"
-  placeholder="Schedule Date"
-  onFocus={(e) => (e.target.type = "date")}
-  onBlur={(e) => {
-    if (!e.target.value) e.target.type = "text";
-  }}
-  value={formData.schedule_date}
-  onChange={handleChange}
-/>
-
-              </div> 
-
-              
               {form_option && (
                 <div className="col-md-3">
                   {/* <label className="form-label">Tender Amount</label> */}
@@ -351,7 +374,6 @@ const RequestForm = ({ category }) => {
 
               <div className="col-md-3">
                 {/* <label className="form-label">Category</label> */}
-                
 
                 <select
                   className="form-select"
@@ -388,8 +410,8 @@ const RequestForm = ({ category }) => {
                 </div>
                 <div className="card-body row">
                   <div className="col-md-3 mb-3">
-                   <input
-                    placeholder="National Newspapers"
+                    <input
+                      placeholder="National Newspapers"
                       type="number"
                       className="form-control"
                       name="print_in_national_np"
@@ -398,9 +420,8 @@ const RequestForm = ({ category }) => {
                     />
                   </div>
                   <div className="col-md-3 mb-3">
-                 
                     <input
-                    placeholder="Local Newspapers"
+                      placeholder="Local Newspapers"
                       type="number"
                       className="form-control"
                       name="print_in_local_np"
@@ -409,9 +430,8 @@ const RequestForm = ({ category }) => {
                     />
                   </div>
                   <div className="col-md-3 mb-3">
-                  
                     <input
-                    placeholder="State Newspapers"
+                      placeholder="State Newspapers"
                       type="number"
                       className="form-control"
                       name="print_in_state_np"
@@ -420,9 +440,8 @@ const RequestForm = ({ category }) => {
                     />
                   </div>
                   <div className="col-md-3 mb-3">
-                  
                     <input
-                    placeholder="Other Newspapers"
+                      placeholder="Other Newspapers"
                       type="number"
                       className="form-control"
                       name="print_in_other_np"
@@ -439,7 +458,6 @@ const RequestForm = ({ category }) => {
               <textarea
                 className="form-control"
                 name="remarks"
-              
                 value={formData.remarks}
                 onChange={handleChange}
                 rows="4"
