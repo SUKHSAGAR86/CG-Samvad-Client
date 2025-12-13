@@ -287,7 +287,7 @@ const RequestForm = ({ category }) => {
                   max={new Date().toISOString().split("T")[0]}
                   onChange={(e) => {
                     const [yyyy, mm, dd] = e.target.value.split("-");
-                    const formatted = `${dd}-${mm}-${yyyy}`;
+                    const formatted = `${yyyy}-${mm}-${dd}`;
 
                     setFormData((prev) => ({
                       ...prev,
@@ -338,7 +338,7 @@ const RequestForm = ({ category }) => {
                   })()}
                   onChange={(e) => {
                     const [yyyy, mm, dd] = e.target.value.split("-");
-                    const formatted = `${dd}-${mm}-${yyyy}`;
+                    const formatted = `${yyyy}-${mm}-${dd}`;
 
                     setFormData((prev) => ({
                       ...prev,

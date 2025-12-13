@@ -262,6 +262,7 @@ const ClientFileUpload = () => {
       return;
     }
 
+    // console.log("dekhon",fileList);
     // Find the original file data to get its link_name for the update payload
     const originalFile = fileList.find(f => f.sno === fileToReplaceSno);
 
