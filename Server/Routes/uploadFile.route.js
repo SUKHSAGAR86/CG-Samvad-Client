@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 
-const { getFiles, uploadFile, updateFile, deleteFile,getUploadCategories } = require("../Controllers/uploadFile.controller");
+const { getFiles, uploadFile, updateFile, deleteFile,getUploadCategories,getFilesRef_Catcd } = require("../Controllers/uploadFile.controller");
 
 const multer = require("multer");
 
@@ -21,7 +21,10 @@ router.get("/files/:ref_id/:financial_year/:categary", (req, res, next) => {
 router.post("/post-files",upload.single("file"), uploadFile);
 router.put("/files",upload.single("file"), updateFile)
 router.delete("/files/delete/:ref_id/:financial_year/:sno", deleteFile)
-
+router.get(
+  "/get-files/:ref_id/:categary_cd",
+  getFilesRef_Catcd
+)
  module.exports = router;
 
 

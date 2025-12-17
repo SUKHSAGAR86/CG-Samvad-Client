@@ -53,6 +53,34 @@ const getFiles = async (req, res) => {
   }
 };
 
+// ==========================Get uploaded file ref_id and categary_cd===========================
+
+const getFilesRef_Catcd = async (req, res) => {
+  try {
+    await poolConnect;
+
+    const { ref_id, categary_cd } = req.params;
+
+    const result = await pool
+      .request()
+      .input("ref_id", sql.VarChar, ref_id)
+      .input("categary_cd", sql.VarChar, categary_cd)
+      .query(`
+        SELECT ref_id, link_name, content_type, file_size_in_bytes
+        FROM Client_Advt_Rquest_Upload_Letter
+        WHERE ref_id = @ref_id
+          AND categary_cd = @categary_cd
+      `);
+
+    res.status(200).json(result.recordset);
+
+  } catch (error) {
+    console.error("Error fetching files:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+module.exports = { getFilesRef_Catcd };
 // ===================== UPLOAD FILE =====================
 // const uploadFile = async (req, res) => {
 //   try {
@@ -320,6 +348,7 @@ const deleteFile = async (req, res) => {
 module.exports = {
   getUploadCategories,
   getFiles,
+  getFilesRef_Catcd,
   uploadFile,
   updateFile,
   deleteFile,
