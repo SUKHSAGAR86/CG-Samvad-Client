@@ -243,7 +243,7 @@ const RequestForm = ({ category }) => {
 
       {/* FORM UI */}
       <form
-        onSubmit={action === "update" ? handleUpdate : handleSubmit}
+       
         className="row g-3"
       >
         <div className="col-12">
@@ -473,6 +473,7 @@ const RequestForm = ({ category }) => {
             type="submit"
             className="btn btn-primary px-4"
             disabled={loading}
+             onClick={action === "update" ? handleUpdate : handleSubmit}
           >
             {loading
               ? "Processing..."

@@ -5,6 +5,7 @@ const getClientNotices = async (req, res) => {
   try {
     await poolConnect;
 
+    
    
     const result = await pool
     .request()
