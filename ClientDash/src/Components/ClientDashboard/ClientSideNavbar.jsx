@@ -174,7 +174,7 @@ const ClientSideNavbar = ({ isCollapsed }) => {
           {!isCollapsed && "About Us"}
         </NavLink>
         <NavLink
-          to="/help"
+          to="/helpdesk"
           className="nav-link text-white sidebar-dropdown"
           style={{
             fontSize: "13px",

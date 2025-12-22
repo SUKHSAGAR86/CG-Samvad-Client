@@ -12,6 +12,8 @@ import ClientFileUpload from "./Components/ClientDashboard//CreateNewRequest/Cli
 import Report from "./Components/ClientDashboard/CreateNewRequest/Report";
 import AboutUs from "./Components/ClientDashboard/AuoutUs";
 
+import HelpDesk from "./Components/ClientDashboard/HelpDesk";
+
 const App = () => {
   return (
     <Router>
@@ -28,6 +30,7 @@ const App = () => {
       <Route path="upload-file/:ref_id" element={<ClientFileUpload />}/>
       <Route path="report" element={<Report/>}/>
       <Route path="aboutus" element={<AboutUs/>}/>
+      <Route path="helpdesk"element={<HelpDesk/>}/>
  
       </Route>
 
