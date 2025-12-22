@@ -10,6 +10,7 @@ import ForwardTo from "./Components/ClientDashboard/CreateNewRequest/forwordTo";
 import NewsRatesList from "./Components/ClientDashboard/NewsRateList";
 import ClientFileUpload from "./Components/ClientDashboard//CreateNewRequest/ClientFileUpload"
 import Report from "./Components/ClientDashboard/CreateNewRequest/Report";
+import AboutUs from "./Components/ClientDashboard/AuoutUs";
 
 const App = () => {
   return (
@@ -26,6 +27,8 @@ const App = () => {
         <Route path="newsratelist" element={<NewsRatesList />} />
       <Route path="upload-file/:ref_id" element={<ClientFileUpload />}/>
       <Route path="report" element={<Report/>}/>
+      <Route path="aboutus" element={<AboutUs/>}/>
+ 
       </Route>
 
       </Routes>

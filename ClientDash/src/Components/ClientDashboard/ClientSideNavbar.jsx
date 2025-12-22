@@ -163,6 +163,17 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         </Collapse> */}
 
         <NavLink
+          to="/aboutus"
+          className="nav-link text-white sidebar-dropdown"
+          style={{
+            fontSize: "13px",
+            borderBottom: "1px solid wheat",
+            borderTop: "1px solid wheat",
+          }}
+        >
+          {!isCollapsed && "About Us"}
+        </NavLink>
+        <NavLink
           to="/help"
           className="nav-link text-white sidebar-dropdown"
           style={{
