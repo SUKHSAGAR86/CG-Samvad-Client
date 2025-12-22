@@ -117,41 +117,10 @@
     line-height: 1.5;
   }
  }
- /*
+ 
+
 .service-card {
-  border-radius: 15px;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease;
-}
-
-.service-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4); 
-}
-
-.service-card:hover {
-  transform: translateY(-5px);
-}
-
-.service-card .card-body {
-  position: relative; 
-}
-
-.service-card .card-header {
-  position: relative;
-  background-color: rgba(0, 0, 0, 0.6);
-} */
-
-
-/* SAME HEIGHT FOR ALL CARDS */
-.service-card {
-  height:180px;                 /* fixed height */
+  height:180px;  
   border-radius: 15px;
   position: relative;
   overflow: hidden;
