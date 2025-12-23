@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const sha256 = require("sha256");
+const multer = require("multer"); 
 
 // const authRoute = require("./routes/auth.route.js");
 
@@ -29,7 +30,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.set("trust proxy", true);
-
+app.use("/uploads", express.static("uploads"));
 // FIXED PATHS
 app.use("/api/auth", authRoute);
 // app.use("api/adminuser",Adminuser);
