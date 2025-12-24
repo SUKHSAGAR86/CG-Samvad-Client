@@ -881,65 +881,127 @@ const ClientFileUpload = () => {
   }, [selectedCategory, letterUploaded]);
 
   // ---------------- UPLOAD FILE (Combined) ----------------
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    if (!file || !linkName) return;
+//   const handleUpload = async (e) => {
+//     e.preventDefault();
+//     if (!file || !linkName) return;
 
-    // ⬅️ CRUCIAL LOGIC MODIFICATION
-    let categoryToUse;
+//     // ⬅️ CRUCIAL LOGIC MODIFICATION
+//     let categoryToUse;
 
-    // 1. If 'letter' is NOT uploaded, we MUST upload to the letter category.
-    if (letterUploaded === 0) {
-      categoryToUse = letterCategoryCode;
-    } else {
-      // 2. If 'letter' IS uploaded, we use the selected category from the dropdown.
-      categoryToUse = selectedCategory;
-    }
+//     // 1. If 'letter' is NOT uploaded, we MUST upload to the letter category.
+//     if (letterUploaded === 0) {
+//       categoryToUse = letterCategoryCode;
+//     } else {
+//       // 2. If 'letter' IS uploaded, we use the selected category from the dropdown.
+//       categoryToUse = selectedCategory;
+//     }
     
-    if (!categoryToUse) {
-        console.error("Category code not determined. Cannot upload.");
-        return;
-    }
+//     if (!categoryToUse) {
+//         console.error("Category code not determined. Cannot upload.");
+//         return;
+//     }
 
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("ref_id", ref_id);
-    formData.append("financial_year", financial_year);
-    formData.append("categary_cd", categoryToUse);
-    formData.append("user_id", user_id);
-    formData.append("link_name", linkName);
+//     // const formData = new FormData();
+//     // formData.append("file", file);
+//     // formData.append("ref_id", ref_id);
+//     // formData.append("financial_year", financial_year);
+//     // formData.append("categary_cd", categoryToUse);
+//     // formData.append("user_id", user_id);
+//     // formData.append("link_name", linkName);
+// const formData = new FormData();
 
-    try {
-      await axios.post("http://localhost:3080/api/post-files", formData , {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+// /* 🔹 REQUIRED FOR MULTER FILENAME LOGIC */
+// formData.append("letterUploaded", letterUploaded);
+// formData.append("letterCategoryCode", letterCategoryCode);
+// formData.append("selectedCategory", selectedCategory);
 
-      // Reset state for the next upload
-      setFile(null);
-      setLinkName("");
-      setPreviewURL(null);
-      setPreviewType("");
-      setFileSize(null);
+// /* 🔹 OTHER FIELDS */
+// formData.append("ref_id", ref_id);
+// formData.append("financial_year", financial_year);
+// formData.append("categary_cd", categoryToUse);
+// formData.append("user_id", user_id);
+// formData.append("user_name", user_name);
 
-      if (fileInputRef.current) fileInputRef.current.value = "";
+// /* 🔹 FILE MUST BE LAST */
+// formData.append("file", file);
 
-      setShowModal(true);
+// await axios.post(
+//   "http://localhost:3080/api/post-files",
+//   formData,
+//   { headers: { "Content-Type": "multipart/form-data" } }
+// );
+
+//     try {
+//       await axios.post("http://localhost:3080/api/post-files", formData , {
+//     headers: {
+//       "Content-Type": "multipart/form-data",
+//     },
+//   });
+
+//       // Reset state for the next upload
+//       setFile(null);
+//       setLinkName("");
+//       setPreviewURL(null);
+//       setPreviewType("");
+//       setFileSize(null);
+
+//       if (fileInputRef.current) fileInputRef.current.value = "";
+
+//       setShowModal(true);
       
-      // Re-fetch categories to update letterUploaded status
-      await fetchCategories(); 
+//       // Re-fetch categories to update letterUploaded status
+//       await fetchCategories(); 
 
-      // Re-fetch files for the currently selected category
-      fetchFiles(); 
+//       // Re-fetch files for the currently selected category
+//       fetchFiles(); 
       
-      window.scrollTo({ top: 0, behavior: "smooth" });
+//       window.scrollTo({ top: 0, behavior: "smooth" });
 
-    } catch (err) {
-      console.error("Upload failed:", err);
-    }
-  };
+//     } catch (err) {
+//       console.error("Upload failed:", err);
+//     }
+//   };
+const handleUpload = async (e) => {
+  e.preventDefault();
+  if (!file) return;
+
+  const categoryToUse =
+    letterUploaded === 0 ? letterCategoryCode : selectedCategory;
+
+  const nextCount =
+    fileList.filter(f => f.categary_cd === categoryToUse).length + 1;
+
+  const formData = new FormData();
+  formData.append("ref_id", ref_id);
+  formData.append("financial_year", financial_year);
+  formData.append("categary_cd", categoryToUse);
+  formData.append("nextCount", nextCount);
+  formData.append("user_id", user_id);
+  formData.append("user_name", user_name);
+  formData.append("file", file);
+
+  try {
+    await axios.post(
+      "http://localhost:3080/api/post-files",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    setFile(null);
+    setPreviewURL(null);
+    setFileSize(null);
+    fileInputRef.current.value = "";
+
+    setShowModal(true);
+    await fetchCategories();
+    fetchFiles();
+
+  } catch (err) {
+    console.error("Upload failed:", err);
+  }
+};
+
 
 
   // ---------------- DELETE FILE ----------------
@@ -1035,7 +1097,7 @@ const ClientFileUpload = () => {
         if (editFileInputRef.current) editFileInputRef.current.value = "";
         return;
     }
-
+console.log(originalFile.linkName)
     try {
       const formData = new FormData();
 
