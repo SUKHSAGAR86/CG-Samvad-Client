@@ -1,0 +1,51 @@
+import express from "express";
+import { getNewspapers, getNpUserWithNewspaper, npProfileHandler } from "../controllers/newspaper.js";
+import { noticeBoard,  stripHtml} from "../controllers/noticeBoard.js";
+import { getNpBankDetails, postOrEditNpBankDetails} from "../controllers/npBankController.js";
+import {
+  getGstDetails,
+  checkGstExists,
+  updateGstDetails,
+} from "../controllers/npGSTController.js";
+import {getNpBankSubDetails, } from "../controllers/npBankSubController.js"
+import {getStates, getDistricts} from "../controllers/common.js"
+import {getROList, publishRO, rejectRO,  getRODetail, publishPrecheck, getActionStatus, uploadPublishProof, getProofDetail} from "../controllers/realeaseOrder.js"
+//import {publishPrecheck} from "../controllers/ROPublish.js"
+
+
+
+const router = express.Router();
+
+//common API
+router.get("/states", getStates)
+router.get("/district", getDistricts)
+// newspaper user Detail API
+router.get("/newspaper", getNewspapers);
+router.get("/npuser/:user_id", getNpUserWithNewspaper);
+router.post("/np-profile", npProfileHandler);
+// GST User Detail API
+router.get("/gst/:user_id", getGstDetails);
+router.get("/gst-exists/:user_id", checkGstExists);
+router.post("/gst/update", updateGstDetails);
+// Bank Sub  Detail API
+router.get("/bank-sub-detail/:np_cd", getNpBankSubDetails)
+router.post("/np/bank-detail", getNpBankSubDetails)
+// Bank Detail API
+router.get("/np/bank-detail/:np_cd", getNpBankDetails);
+router.post("/np/bank-detail/edit", postOrEditNpBankDetails);
+// Realease Order API
+router.get("/ro/list", getROList);
+router.post("/ro/publish-ro", publishRO);
+router.post("/ro/reject-ro", rejectRO)
+router.get("/ro/details", getRODetail);
+router.get("/ro/actions/list", getActionStatus);
+router.post('/ro/publish-precheck', publishPrecheck);
+router.post('/ro/uploadProof', uploadPublishProof)
+router.post('/ro/uploadProofDetails', getProofDetail)
+// notice board API
+router.get("/notice-board", noticeBoard)
+//router.get("/notice-board-text", stripHtml)
+
+
+
+export default router;

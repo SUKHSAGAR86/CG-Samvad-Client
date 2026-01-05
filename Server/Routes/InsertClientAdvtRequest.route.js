@@ -3,7 +3,7 @@ const express = require("express");
 
 const {
   insertClientAdvtRequest,
-getRecords,
+  getRecords,
   getRequestById,
   updateClientAdvtRequest,
   deleteClientAdvtRequest,
@@ -13,7 +13,6 @@ getRecords,
 const router = express.Router();
 router.post("/client-advt-request", insertClientAdvtRequest);
 router.get("/get-client-advt-request",getRecords);
-
 router.get("/get-client-advt-request/:ref_id", getRequestById);
 router.put("/client-advt-request/:ref_id", updateClientAdvtRequest);
 router.delete("/client-advt-request/:ref_id", deleteClientAdvtRequest);
