@@ -1,14 +1,7 @@
-// controllers/npBankSubController.js
-import sql from "mssql";
-import config from "../config/db.js";
+const { pool, sql } = require("../../database/dbConfig.js");
 
-export const getNpBankSubDetails = async (req, res) => {
-  //console.log("Backend: GET NP Bank Sub Details", req.body);
-
+const getNpBankSubDetails = async (req, res) => {
   try {
-    const pool = await sql.connect(config);
-    
-    // Extract params from query OR params
     const {
       action,
       user_id,
@@ -26,8 +19,8 @@ export const getNpBankSubDetails = async (req, res) => {
       });
     }
 
-    // Prepare SQL request
     const request = pool.request();
+
     request.input("user_id", sql.VarChar(5), user_id || null);
     request.input("np_cd", sql.VarChar(6), np_cd || null);
     request.input("Cate_cd", sql.VarChar(2), Cate_cd || null);
@@ -37,11 +30,10 @@ export const getNpBankSubDetails = async (req, res) => {
     request.input("action", sql.VarChar(10), action);
     request.output("returnval", sql.Int);
 
-    // Execute stored procedure
     const result = await request.execute("NP_BankDetail_Sub_CRUD");
 
     const returnVal = result.output.returnval;
-    //console.log("yahaan tk pohoch hh ")
+
     if (returnVal === -1) {
       return res.status(400).json({
         success: false,
@@ -50,7 +42,6 @@ export const getNpBankSubDetails = async (req, res) => {
       });
     }
 
-    // For GET calls, data is in result.recordset
     return res.status(200).json({
       success: true,
       action,
@@ -62,7 +53,10 @@ export const getNpBankSubDetails = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
-      error: error.message,
     });
   }
+};
+
+module.exports = {
+  getNpBankSubDetails,
 };

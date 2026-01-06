@@ -1,12 +1,17 @@
-// controllers/npBankController.js
-import sql from "mssql";
-import config from "../config/db.js";
-// Get Bank Detail
-export const getNpBankDetails = async (req, res) => {
+const { pool, poolConnect, sql } = require("../../database/dbConfig.js");
+
+/**
+ * =========================
+ * GET NP BANK DETAILS
+ * =========================
+ */
+const getNpBankDetails = async (req, res) => {
   console.log("GET @ NP Bank Detail", req.params);
 
   try {
-    const pool = await sql.connect(config);
+    // ✅ ensure DB connection
+    await poolConnect;
+
     const {
       user_id = null,
       np_cd = null,
@@ -22,11 +27,11 @@ export const getNpBankDetails = async (req, res) => {
 
     const request = pool.request();
 
-    // Required inputs for GET
+    // Required inputs
     request.input("user_id", sql.VarChar(5), user_id);
     request.input("np_cd", sql.VarChar(6), np_cd);
 
-    // Other optional fields always null in GET
+    // Optional inputs (null for GET)
     request.input("bank_name", sql.NVarChar(100), null);
     request.input("account_no", sql.VarChar(20), null);
     request.input("account_holder_name", sql.NVarChar(50), null);
@@ -44,13 +49,12 @@ export const getNpBankDetails = async (req, res) => {
     request.output("returnval", sql.Int);
 
     const result = await request.execute("NP_BankDetail_Main_CRUD");
-    
+
     return res.status(200).json({
       status: result.output.returnval,
-      data: result.recordset,
+      data: result.recordset || [],
       message: "Bank details fetched successfully",
     });
-
   } catch (error) {
     console.error("GET NP Bank Detail Error:", error);
     return res.status(500).json({
@@ -60,12 +64,17 @@ export const getNpBankDetails = async (req, res) => {
   }
 };
 
-// Edit / Update API
-export const postOrEditNpBankDetails = async (req, res) => {
+/**
+ * =========================
+ * POST / EDIT NP BANK DETAILS
+ * =========================
+ */
+const postOrEditNpBankDetails = async (req, res) => {
   console.log("POST/EDIT @ NP Bank Detail", req.body);
 
   try {
-    const pool = await sql.connect(config);
+    // ✅ ensure DB connection
+    await poolConnect;
 
     const {
       user_id = null,
@@ -82,7 +91,7 @@ export const postOrEditNpBankDetails = async (req, res) => {
       ip_address = null,
       by_user_id = null,
       by_user_name = null,
-      action = "post",  // post/edit/is_verified
+      action = "post", // post | edit | is_verified
     } = req.body;
 
     const request = pool.request();
@@ -108,7 +117,7 @@ export const postOrEditNpBankDetails = async (req, res) => {
 
     return res.status(200).json({
       status: result.output.returnval,
-      data: result.recordset || 1,
+      data: result.recordset || [],
       message:
         action === "post"
           ? "Bank details added successfully"
@@ -118,7 +127,6 @@ export const postOrEditNpBankDetails = async (req, res) => {
           ? "Verification status fetched"
           : "Operation completed",
     });
-
   } catch (error) {
     console.error("POST/EDIT NP Bank Detail Error:", error);
     return res.status(500).json({
@@ -126,4 +134,9 @@ export const postOrEditNpBankDetails = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+module.exports = {
+  getNpBankDetails,
+  postOrEditNpBankDetails,
 };

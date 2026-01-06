@@ -1,10 +1,11 @@
-import sql from "mssql";
-import config from "../config/db.js"; // note the .js extension
-// get news paper API
-export const getNewspapers = async (req, res) => {
-  console.log("calling this")
+const { pool, poolConnect, sql } = require("../../database/dbConfig.js");
+
+/**
+ * GET ALL NEWSPAPERS
+ */
+const getNewspapers = async (req, res) => {
   try {
-    let pool = await sql.connect(config);
+    await poolConnect;
 
     const query = `
       SELECT TOP (1000)
@@ -63,163 +64,83 @@ export const getNewspapers = async (req, res) => {
       FROM [samvad_np].[dbo].[NewsPaper]
     `;
 
-    let result = await pool.request().query(query);
-    //console.log("result data", result)
-    return res.status(200).json({
+    const result = await pool.request().query(query);
+
+    res.status(200).json({
       success: true,
       count: result.recordset.length,
       data: result.recordset,
     });
-
   } catch (error) {
-    console.error("Error fetching newspaper list:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error while fetching newspaper data",
-    });
+    console.error(error);
+    res.status(500).json({ success: false });
   }
 };
-// get newspaper profile information
-export const getNpUserWithNewspaper = async (req, res) => {
-  console.log("Fetching NP user for ID:");
 
+/**
+ * GET NP USER WITH NEWSPAPER
+ */
+const getNpUserWithNewspaper = async (req, res) => {
   try {
+    await poolConnect;
+
     const { user_id } = req.params;
 
-    console.log("User ID received:", user_id);
-    const pool = await sql.connect(config);
-
     const query = `
-        SELECT DISTINCT 
-          NPUser_Login.user_id, 
-          NPUser_Login.contact_no, 
-          NPUser_Login.np_cd, 
-          NPUser_Login.user_name, 
-          NPUser_Login.std_code, 
-          NPUser_Login.landline_no,
-          NPUser_Login.email_id, 
-          NPUser_Login.fax_no,
-          NPUser_Login.address as loginaddr, 
-          NPUser_Login.status, 
-          NewsPaper.District_Text,
-          NewsPaper.District_Code,
-          NewsPaper.State_Text,
-          NewsPaper.State_Code,
-          NewsPaper.np_name + '-' + NewsPaper.edition AS np_name, 
-          NewsPaper.NPADDR1 + ',' + ISNULL(NewsPaper.NPADDR2 + ',', '') + ISNULL(NewsPaper.NPADDR3 + ',', '') +
-          NewsPaper.NPCITY_text + ',' + NewsPaper.NPSTATE_text + ',' + NewsPaper.NPPOSTAL_cd AS address  
-        FROM NewsPaper
-        INNER JOIN NPUser_Login ON NewsPaper.np_cd = NPUser_Login.np_cd
-        WHERE NewsPaper.status = 1
-          AND NPUser_Login.user_id = @user_id
-      `;
+      SELECT DISTINCT 
+        NPUser_Login.user_id, 
+        NPUser_Login.contact_no, 
+        NPUser_Login.np_cd, 
+        NPUser_Login.user_name, 
+        NPUser_Login.std_code, 
+        NPUser_Login.landline_no,
+        NPUser_Login.email_id, 
+        NPUser_Login.fax_no,
+        NPUser_Login.address AS loginaddr, 
+        NPUser_Login.status, 
+        NewsPaper.District_Text,
+        NewsPaper.District_Code,
+        NewsPaper.State_Text,
+        NewsPaper.State_Code,
+        NewsPaper.np_name + '-' + NewsPaper.edition AS np_name,
+        NewsPaper.NPADDR1 + ',' +
+        ISNULL(NewsPaper.NPADDR2 + ',', '') +
+        ISNULL(NewsPaper.NPADDR3 + ',', '') +
+        NewsPaper.NPCITY_text + ',' +
+        NewsPaper.NPSTATE_text + ',' +
+        NewsPaper.NPPOSTAL_cd AS address
+      FROM NewsPaper
+      INNER JOIN NPUser_Login 
+        ON NewsPaper.np_cd = NPUser_Login.np_cd
+      WHERE NewsPaper.status = 1
+        AND NPUser_Login.user_id = @user_id
+    `;
 
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input("user_id", sql.VarChar, user_id)
       .query(query);
 
-    if (result.recordset.length === 0) {
+    if (!result.recordset.length) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      data: result.recordset[0]
+      data: result.recordset[0],
     });
-
   } catch (error) {
-    console.error("Error fetching NP user with newspaper:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error while fetching NP user data",
-    });
+    console.error(error);
+    res.status(500).json({ success: false });
   }
 };
-// ordernewspaper 
-// export const getBankDetailsByUser = async (req, res) => {
 
-//   try {
-//     const { user_id } = req.params;
-
-//     if (!user_id) {
-//       return res.status(400).json({ message: "user_id is required" });
-//     }
-//     const pool = await sql.connect(config);
-//     const query = `SELECT DISTINCT 
-//       NPUser_Login.user_id,
-//       state,
-//       district,
-//       bank_name,
-//       branch_name,
-//       ifsc_code,
-//       micr_code,
-//       account_no,
-//       account_holder_name 
-//       FROM NewsPaper
-//         INNER JOIN NPUser_Login ON NewsPaper.np_cd = NPUser_Login.np_cd
-//         WHERE NewsPaper.status = 1
-//           AND NPUser_Login.user_id = @user_id`;
-
-//     const result = await pool.request()
-//       .input("user_id", sql.VarChar, user_id)
-//       .query(query);
-
-//     if (result.recordset.length === 0) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       data: result.recordset[0]
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching bank details:", error);
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-// // Update GST detail 
-// export const getGSTDetailsByUser = async (req, res) => {
-//   console.log("called api gst oneś")
-//   try {
-//     const { user_id } = req.params;
-
-//     if (!user_id) {
-//       return res.status(400).json({ message: "user_id is required" });
-//     }
-//     const pool = await sql.connect(config);
-//     const query = `SELECT DISTINCT 
-//       GST_legalName, GST_number, GST_StateID, GST_StateText, GST_DateOfRegistration, 
-//                          GST_TaxpayerType, GST_Trade_Name, GST_DateOfIssue
-//       FROM NewsPaper
-//         INNER JOIN NPUser_Login ON NewsPaper.np_cd = NPUser_Login.np_cd
-//         WHERE NewsPaper.status = 1
-//           AND NPUser_Login.status = 1 AND NPUser_Login.user_id = @user_id`;
-
-//     const result = await pool.request()
-//       .input("user_id", sql.VarChar, user_id)
-//       .query(query);
-
-//     if (result.recordset.length === 0) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       data: result.recordset[0]
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching bank details:", error);
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-// Edit News Paper Edit
-export const npProfileHandler = async (req, res) => {
-  console.log("Backend call received @ NP Profile");
-
+/**
+ * NP PROFILE HANDLER
+ */
+const npProfileHandler = async (req, res) => {
   try {
-    const pool = await sql.connect(config);
+    await poolConnect;
 
     const {
       user_id,
@@ -232,7 +153,6 @@ export const npProfileHandler = async (req, res) => {
       contact_no = null,
       NPADDR1 = null,
       NPADDR2 = null,
-      // NPSTATE = null,
       State_Text = null,
       State_Code = null,
       NPCITY = null,
@@ -241,10 +161,8 @@ export const npProfileHandler = async (req, res) => {
       ip_address = null,
       by_user_id = null,
       by_user_name = null,
-
       action,
     } = req.body;
-    console.log(req.body)
 
     const request = pool.request();
 
@@ -258,7 +176,6 @@ export const npProfileHandler = async (req, res) => {
     request.input("contact_no", sql.VarChar(10), contact_no);
     request.input("NPADDR1", sql.NVarChar(100), NPADDR1);
     request.input("NPADDR2", sql.NVarChar(50), NPADDR2);
-    // request.input("NPSTATE", sql.NVarChar(10), NPSTATE);
     request.input("State_Text", sql.VarChar(100), State_Text);
     request.input("State_Code", sql.VarChar(10), State_Code);
     request.input("NPCITY", sql.NVarChar(10), NPCITY);
@@ -272,21 +189,18 @@ export const npProfileHandler = async (req, res) => {
 
     const result = await request.execute("NP_Profile_CRUD");
 
-    return res.status(200).json({
+    res.status(200).json({
       status: result.output.returnval,
       data: result.recordset || [],
-      message:
-        action === "get"
-          ? "User profile fetched successfully"
-          : "User profile updated successfully",
     });
   } catch (error) {
-    console.error("NP Profile API error:", error);
-
-    return res.status(500).json({
-      status: -1,
-      error: error.message,
-    });
+    console.error(error);
+    res.status(500).json({ status: -1, error: error.message });
   }
 };
 
+module.exports = {
+  getNewspapers,
+  getNpUserWithNewspaper,
+  npProfileHandler,
+};
