@@ -8,7 +8,7 @@ const {
   uploadFile,
   updateFile,
   deleteFile,
-  getUploadCategories,
+ getUploadCategories,
   getFilesRef_Catcd
 } = require("../Controllers/uploadFile.controller");
 
