@@ -13,6 +13,8 @@ const newsRateList = require("./Routes/newsRateList.route.js");
 const newspaper = require("./Routes/newspaperRoutes.js");
 const uploadFile = require("./Routes/uploadFile.route.js"); // Uncomment if you have this
 
+const usersLogin=require("./Routes/user.login.route.js")
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -40,6 +42,10 @@ checkRoute(newsRateList, "newsRateList");
 checkRoute(newspaper, "newspaper");
 checkRoute(uploadFile, "uploadFile"); // Uncomment if using
 
+// ===============userlogin==================
+checkRoute(usersLogin,"usersLogin");
+
+
 // --- Use routes safely ---
 if (typeof authRoute === "function") app.use("/api/auth", authRoute);
 if (typeof newspaper === "function") app.use("/api/newspaper", newspaper);
@@ -50,6 +56,8 @@ if (typeof clientNotices === "function") app.use("/api", clientNotices);
 if (typeof newsRateList === "function") app.use("/api", newsRateList);
 if (typeof uploadFile === "function") app.use("/api", uploadFile); // Uncomment if using
 
+
+if(typeof usersLogin==="function") app.use("/api",usersLogin);
 // --- Fallback route ---
 app.get("/", (req, res) => {
   res.send("Server is running!");
