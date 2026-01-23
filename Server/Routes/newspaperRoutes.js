@@ -6,7 +6,7 @@ const {
   npProfileHandler,
 } = require("../Controllers/Newspaper/newspaper");
 
-const { noticeBoard } = require("../Controllers/Newspaper/noticeBoard");
+const { noticeBoard, fakeNoticeBoard } = require("../Controllers/Newspaper/noticeBoard");
 
 const {
   getNpBankDetails,
@@ -32,6 +32,7 @@ const {
   getROList,
   rejectRO,
   uploadPublishProof,
+  getActionStatus
 } = require("../controllers/Newspaper/realeaseOrder");
 
 const router = express.Router();
@@ -61,9 +62,11 @@ router.post("/np/bank-detail/edit", postOrEditNpBankDetails);
 // Release Order API
 router.get("/ro/list", getROList);
 router.post("/ro/reject-ro", rejectRO);
+router.get("/ro/actions/list", getActionStatus);
 router.post("/ro/uploadProof", uploadPublishProof);
 
 // Notice board API
 router.get("/notice-board", noticeBoard);
+router.get("/fakeNoticeBoard", fakeNoticeBoard)
 
 module.exports = router;
