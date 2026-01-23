@@ -27,12 +27,12 @@ const App = () => {
         <Route path="newrequest" element={<CreateNewRequest />} />
         <Route path="forwardto" element={<ForwardTo />} />
         <Route path="newsratelist" element={<NewsRatesList />} />
-      <Route path="upload-file/:ref_id" element={<ClientFileUpload />}/>
-      <Route path="report" element={<Report/>}/>
-      <Route path="aboutus" element={<AboutUs/>}/>
-      <Route path="helpdesk"element={<HelpDesk/>}/>
+        <Route path="upload-file/:ref_id" element={<ClientFileUpload />}/>
+        <Route path="report" element={<Report/>}/>
+        <Route path="aboutus" element={<AboutUs/>}/>
+        <Route path="helpdesk"element={<HelpDesk/>}/>
  
-      </Route>
+        </Route>
 
       </Routes>
     </Router>
