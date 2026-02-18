@@ -41,16 +41,28 @@ const ClientSideNavbar = ({ isCollapsed }) => {
           {!isCollapsed && "Inbox"}
         </NavLink>
 
-        <NavLink
-          to="/newrequest"
+        {/* <NavLink
+         to="/forwardto"
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
           {!isCollapsed && "Submited Requests"}
-        </NavLink>
+        </NavLink> */}
+        
+<NavLink
+  to="/forwardto"
+  state={{ action: "get_forwarded" }} 
+  // 👈 pass action here
+  className="nav-link text-white sidebar-dropdown"
+  style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
+>
+  {!isCollapsed && "Submited Requests"}
+</NavLink>
 
         <NavLink
           to="/forwardto"
+           state={{ action: "get_not_forwarded" }}
+
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
@@ -58,7 +70,8 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         </NavLink>
 
         <NavLink
-          to="/Forward-Request"
+           to="/forwardto"
+  state={{ action: "get_under_process" }} 
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
@@ -66,12 +79,14 @@ const ClientSideNavbar = ({ isCollapsed }) => {
         </NavLink>
 
         <NavLink
-          to="/Forward-Request"
+             to="/forwardto"
+  state={{ action: "get_all_accepted" }} 
           className="nav-link text-white sidebar-dropdown"
           style={{ fontSize: "13px", borderBottom: "1px solid wheat" }}
         >
           {!isCollapsed && "Accepted Request"}
         </NavLink>
+
 
         <NavLink
           to="/Forward-Request"

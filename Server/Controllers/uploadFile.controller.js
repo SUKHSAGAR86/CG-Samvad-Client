@@ -133,11 +133,24 @@ const updateFile = async (req, res) => {
       return res.status(400).json({ error: "File required" });
     }
 
-    const { ref_id, financial_year, sno, user_id, user_name = "" } = req.body;
+    // const { ref_id,  sno, user_id, user_name = "" } = req.body;
+    const {
+  ref_id,
+  sno,
+  user_id,
+  user_name = "",
+  financial_year,
+  categary_cd,
+  nextCount,
+} = req.body;
 
-    if (!ref_id || !financial_year || !sno || !user_id) {
-      return res.status(400).json({ error: "Missing fields" });
-    }
+
+    // if (!ref_id  || !sno || !user_id) {
+    //   return res.status(400).json({ error: "Missing fields" });
+    // }
+if (!ref_id || !sno || !user_id || !financial_year) {
+  return res.status(400).json({ error: "Missing fields" });
+}
 
     await poolConnect;
     const userIp = getClientIp(req);
