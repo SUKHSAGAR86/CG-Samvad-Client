@@ -12,6 +12,7 @@ const clientNotices = require("./Routes/clientNotices.route.js");
 const newsRateList = require("./Routes/newsRateList.route.js");
 const newspaper = require("./Routes/newspaperRoutes.js");
 const uploadFile = require("./Routes/uploadFile.route.js"); // Uncomment if you have this
+const menu = require("./Routes/menu.route.js")
 
 const usersLogin=require("./Routes/user.login.route.js")
 
@@ -40,6 +41,7 @@ checkRoute(insertClientAdvtRequest, "insertClientAdvtRequest");
 checkRoute(clientNotices, "clientNotices");
 checkRoute(newsRateList, "newsRateList");
 checkRoute(newspaper, "newspaper");
+checkRoute(menu, "menu");
 checkRoute(uploadFile, "uploadFile"); // Uncomment if using
 
 // ===============userlogin==================
@@ -49,14 +51,12 @@ checkRoute(usersLogin,"usersLogin");
 // --- Use routes safely ---
 if (typeof authRoute === "function") app.use("/api/auth", authRoute);
 if (typeof newspaper === "function") app.use("/api/newspaper", newspaper);
-
+if (typeof menu === "function") app.use("/api/mainmenu", menu);
 if (typeof createNewRequest === "function") app.use("/api", createNewRequest);
 if (typeof insertClientAdvtRequest === "function") app.use("/api", insertClientAdvtRequest);
 if (typeof clientNotices === "function") app.use("/api", clientNotices);
 if (typeof newsRateList === "function") app.use("/api", newsRateList);
-if (typeof uploadFile === "function") app.use("/api", uploadFile); // Uncomment if using
-
-
+if (typeof uploadFile === "function") app.use("/api", uploadFile); // Uncomment if 
 if(typeof usersLogin==="function") app.use("/api",usersLogin);
 // --- Fallback route ---
 app.get("/", (req, res) => {
