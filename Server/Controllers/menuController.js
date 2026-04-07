@@ -41,6 +41,7 @@ const getUserMenu = async (req, res) => {
         menuMap[row.menu_cd].submenus[row.sub_menu_code].forms.push({
           forms_code: row.forms_code,
           form_display_name: row.form_display_name,
+          form_path_name: row.form_actual_name,
         });
       }
     });
